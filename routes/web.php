@@ -70,7 +70,7 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-Route::post('/evaluation/update/{token}', [HeadController::class, 'updateEvaluation'])->name('evaluation.head.update');
+Route::post('/evaluation/update/{token}', [HeadController::class, 'updateEvaluation'])->name('evaluation.update');
 
 Route::get('/evaluation/head-review/{token}', [HeadController::class, 'reviewPage']);
 
