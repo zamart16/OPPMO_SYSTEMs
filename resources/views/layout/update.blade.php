@@ -605,15 +605,15 @@ async function submitUpdateEvaluation(id){
         const evaluatorImage = evaluatorImageEl && evaluatorImageEl.src ? evaluatorImageEl.src : null;
 
         const evaluationData = {
-            supplier_name: document.getElementById('update_supplier_name').value.trim(),
-            po_no: document.getElementById('update_po_no').value.trim(),
-            date_evaluation: document.getElementById('update_date_evaluation').value,
-            covered_period: document.getElementById('update_covered_period').value.trim(),
-            office_name: document.getElementById('update_office_name').value.trim(),
+            supplier_name: safeValue('update_supplier_name'),
+            po_no: safeValue('update_po_no'),
+            date_evaluation: safeValue('update_date_evaluation', false),
+            covered_period: safeValue('update_covered_period'),
+            office_name: safeValue('update_office_name'),
             criteria_scores: [],
             evaluator: {
-                full_name: document.getElementById('update_full_name').value.trim(),
-                designation: document.getElementById('update_designation').value.trim(),
+                full_name: safeValue('update_full_name'),
+                designation: safeValue('update_designation'),
                 ...(evaluatorImage ? { image: evaluatorImage } : {})
             }
         };
@@ -702,13 +702,25 @@ function getCriteriaName(id){
         default: return '';
     }
 }
-
+// ===============================
+// SAFE INPUT GETTER
+// ===============================
+function safeValue(id, trim = true) {
+    const el = document.getElementById(id);
+    if (!el) return '';
+    return trim ? el.value.trim() : el.value;
+}
 // ===============================
 // BUTTON EVENTS
 // ===============================
-document.getElementById('submitUpdateEvaluationBtn').addEventListener('click', ()=>{
-    if(currentEditEvaluationId) submitUpdateEvaluation(currentEditEvaluationId);
-});
+const submitBtn = document.getElementById('submitUpdateEvaluationBtn');
+if (submitBtn) {
+    submitBtn.addEventListener('click', () => {
+        if (currentEditEvaluationId) {
+            submitUpdateEvaluation(currentEditEvaluationId);
+        }
+    });
+}
 document.getElementById('cancelUpdateEvaluationModalBtn').addEventListener('click', ()=>{
     document.getElementById('updateEvaluationModal').classList.add('hidden');
 });
