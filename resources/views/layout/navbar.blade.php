@@ -25,7 +25,7 @@
            <span>User Management</span>
         </a>
     @endif
-      <a href="/evaluation" class="text-gray-900 hover:text-blue-600 text-base font-medium flex items-center space-x-2 transition-all duration-300">
+      <a href="/evaluation" class="hidden text-gray-900 hover:text-blue-600 text-base font-medium flex items-center space-x-2 transition-all duration-300">
         <span>Data Analytics</span>
       </a>
     </div>
