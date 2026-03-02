@@ -66,7 +66,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/evaluations/{id}/download', function () {
     dd(extension_loaded('gd'));
 });
-});
 
 
 
