@@ -5,12 +5,13 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    libpq-dev \
     zip \
     unzip \
     git \
     curl \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql
+    && docker-php-ext-install gd pdo pdo_mysql pdo_pgsql pgsql
 
 # Set working directory
 WORKDIR /var/www
@@ -22,7 +23,7 @@ COPY . .
 RUN curl -sS https://getcomposer.org/installer | php \
     && php composer.phar install --no-dev --optimize-autoloader
 
-# Expose port (Railway will provide $PORT)
+# Expose port (Railway provides $PORT)
 EXPOSE $PORT
 
 # Serve Laravel
