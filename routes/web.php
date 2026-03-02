@@ -63,6 +63,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/evaluations/summary/download', [EvaluationController::class, 'downloadSummary'])->name('evaluations.summary.download');
     Route::get('/evaluations/{id}/download', [EvaluationController::class, 'download'])->name('evaluations.download');
+    dd(extension_loaded('gd'));
 });
 
 
