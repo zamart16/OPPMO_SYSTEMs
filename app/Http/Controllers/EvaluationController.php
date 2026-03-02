@@ -395,7 +395,6 @@ public function update(Request $request, $id)
 
     public function download($id)
     {
-        dd(extension_loaded('gd')); // TEMP: check if GD is installed
         $evaluation = Evaluation::findOrFail($id);
 
         // Use your existing PDF layout
