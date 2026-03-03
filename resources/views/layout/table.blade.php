@@ -38,6 +38,7 @@
     const currentUserRole = "{{ auth()->user()->role }}";
 </script>
 
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const tableBody = document.querySelector('#evaluationTable tbody');
@@ -49,7 +50,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const closeModalBtn = document.getElementById('closecalculateModalBtn');
     const modalContent = document.getElementById('modalContent');
     const searchInput = document.getElementById('searchInput');
-    const statusFilter = document.getElementById('statusFilter');
     const departmentFilter = document.getElementById('departmentFilter');
     const startDateFilter = document.getElementById('startDateFilter');
     const endDateFilter = document.getElementById('endDateFilter');
@@ -160,71 +160,47 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
- // --- Combined Filtering ---
+    // --- Combined Filtering ---
     function filterTable() {
-
         const searchText = searchInput.value.toLowerCase();
-        const searchStatus = statusFilter ? statusFilter.value.toLowerCase() : '';
+        const searchStatus = statusFilter.value.toLowerCase();
         const department = departmentFilter.value;
         const startDate = startDateFilter.value;
         const endDate = endDateFilter.value;
 
         filteredData = evaluationsData.filter(e => {
-
-            const weightedScore = calculateWeightedScore(e.criteria_scores) ?? '';
-            const hasIncomplete = weightedScore === '';
-            const evaluator = e.digital_approvals?.[0]?.full_name ?? null;
-
-            let computedStatus = 'pending';
-
-            if (!hasIncomplete && evaluator) {
-                if (weightedScore >= 60) {
-                    computedStatus = 'approved';
-                } else {
-                    computedStatus = 'fail / for office head review';
-                }
-            }
-
             const combinedText = `
                 ${e.supplier_name ?? ''}
                 ${e.po_no ?? ''}
                 ${e.date_evaluation ?? ''}
                 ${e.digital_approvals?.[0]?.full_name ?? ''}
                 ${e.office_name ?? ''}
-                ${weightedScore ?? ''}
+                ${e.status ?? ''}
+                ${calculateWeightedScore(e.criteria_scores) ?? ''}
             `.toLowerCase();
 
             const matchesText = combinedText.includes(searchText);
-            const matchesStatus = !searchStatus || computedStatus.includes(searchStatus);
+            const matchesStatus = combinedText.includes(searchStatus);
             const matchesDepartment = !department || e.office_name === department;
 
             const evalDate = e.date_evaluation ? new Date(e.date_evaluation) : null;
             const afterStart = !startDate || (evalDate && evalDate >= new Date(startDate));
             const beforeEnd = !endDate || (evalDate && evalDate <= new Date(endDate));
 
-            return matchesText &&
-                   matchesStatus &&
-                   matchesDepartment &&
-                   afterStart &&
-                   beforeEnd;
+            return matchesText && matchesDepartment && afterStart && beforeEnd;
         });
 
         renderTable(filteredData);
     }
 
     searchInput.addEventListener('input', filterTable);
-
-    if (statusFilter) {
-        statusFilter.addEventListener('change', filterTable); // ✅ SAFE
-    }
-
+    statusFilter.addEventListener('input', filterTable);
     departmentFilter.addEventListener('change', filterTable);
     startDateFilter.addEventListener('change', filterTable);
     endDateFilter.addEventListener('change', filterTable);
-
     clearFiltersBtn.addEventListener('click', () => {
         searchInput.value = '';
-        if (statusFilter) statusFilter.value = '';
+        statusFilter.value = '';
         departmentFilter.value = '';
         startDateFilter.value = '';
         endDateFilter.value = '';
@@ -381,7 +357,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const startDateFilter = document.getElementById('startDateFilter');
     const endDateFilter = document.getElementById('endDateFilter');
     const clearFiltersBtn = document.getElementById('clearFiltersBtn');
-    const statusFilter = document.getElementById('statusFilter');
 
     fetchEvaluations();
 
@@ -483,7 +458,6 @@ async function fetchEvaluations() {
         const department = departmentFilter.value;
         const startDate = startDateFilter.value;
         const endDate = endDateFilter.value;
-        const status = departmentFilter.value;
 
         const filtered = evaluationsData.filter(e => {
             const combinedText = `
@@ -521,14 +495,12 @@ async function fetchEvaluations() {
 
     clearFiltersBtn.addEventListener('click', function () {
         searchInput.value = '';
-        departmentFilter.value = '';
         startDateFilter.value = '';
         endDateFilter.value = '';
         renderTable(evaluationsData);
     });
 
     searchInput.addEventListener('input', filterTable);
-    departmentFilter.addEventListener('change', filterTable);
     startDateFilter.addEventListener('change', filterTable);
     endDateFilter.addEventListener('change', filterTable);
 
