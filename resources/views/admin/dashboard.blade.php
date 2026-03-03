@@ -561,7 +561,7 @@
 
 
 
-<script>
+<!-- <script>
 (function() {
     function detectDevTools() {
         const threshold = 160;
@@ -593,7 +593,7 @@ document.addEventListener('keydown', function(e) {
         });
     }
 });
-</script> 
+</script>  -->
 </body>
 
 </html>
