@@ -609,24 +609,24 @@ async function fetchEvaluations() {
             e.target.value = '';
         }
     });
-    // Expand / Collapse Feature
-    tableBody.addEventListener("click", function(e) {
+// --- Expand/Collapse Click Handler ---
+tableBody.addEventListener('click', function(e) {
+    if (!e.target.classList.contains('expand-btn')) return;
 
-        if (!e.target.classList.contains("expand-btn")) return;
+    // The div containing the text is the previous sibling of the button
+    const wrapper = e.target.previousElementSibling;
+    if (!wrapper) return;
 
-        const textDiv = e.target.previousElementSibling;
-
-        if (textDiv.classList.contains("truncate-text")) {
-            textDiv.classList.remove("truncate-text");
-            textDiv.classList.add("expanded-text");
-            e.target.textContent = "Collapse";
-        } else {
-            textDiv.classList.add("truncate-text");
-            textDiv.classList.remove("expanded-text");
-            e.target.textContent = "Expand";
-        }
-
-    });
+    if (wrapper.classList.contains('truncate-text')) {
+        wrapper.classList.remove('truncate-text');
+        wrapper.classList.add('expanded-text');
+        e.target.textContent = "Collapse";
+    } else {
+        wrapper.classList.add('truncate-text');
+        wrapper.classList.remove('expanded-text');
+        e.target.textContent = "Expand";
+    }
+});
 });
 </script> --}}
 
