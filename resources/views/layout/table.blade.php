@@ -49,6 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const closeModalBtn = document.getElementById('closecalculateModalBtn');
     const modalContent = document.getElementById('modalContent');
     const searchInput = document.getElementById('searchInput');
+    const statusFilter = document.getElementById('statusFilter');
     const departmentFilter = document.getElementById('departmentFilter');
     const startDateFilter = document.getElementById('startDateFilter');
     const endDateFilter = document.getElementById('endDateFilter');
