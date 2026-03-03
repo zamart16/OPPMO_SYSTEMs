@@ -211,6 +211,16 @@ function renderTable(data) {
 
     updateSelectedRows();
 }
+        // --- Expand/Collapse ---
+    tableBody.addEventListener('click', function(e) {
+        if (!e.target.classList.contains('expand-btn')) return;
+        const wrapper = e.target.previousElementSibling;
+        if (wrapper.classList.contains('truncate-text')) {
+            wrapper.classList.remove('truncate-text'); wrapper.classList.add('expanded-text'); e.target.textContent = "Collapse";
+        } else {
+            wrapper.classList.add('truncate-text'); wrapper.classList.remove('expanded-text'); e.target.textContent = "Expand";
+        }
+    });
 
     // --- Combined Filtering ---
     function filterTable() {
