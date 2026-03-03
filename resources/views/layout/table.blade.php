@@ -373,16 +373,18 @@ function renderTable(data) {
     const action = e.target.value;
     if (!evaluationId) return;
 
-    Swal.fire({ 
-        title: 'Processing...', 
-        allowOutsideClick: false, 
-        didOpen: () => Swal.showLoading() 
-    });
+    // Only show loading for actions other than 'link'
+    if (action !== 'link') {
+        Swal.fire({ 
+            title: 'Processing...', 
+            allowOutsideClick: false, 
+            didOpen: () => Swal.showLoading() 
+        });
+    }
 
     try {
         // Get the full evaluation object from filteredData
         const evaluation = filteredData.find(ev => ev.id == evaluationId);
-
         if (!evaluation) throw new Error('Evaluation not found');
 
         if (action === 'review') {
@@ -390,7 +392,6 @@ function renderTable(data) {
         } else if (action === 'edit') {
             await updateEvaluation(evaluationId);
         } else if (action === 'download') {
-            // Open PDF download in new tab
             window.open(`/evaluations/${evaluationId}/download`, '_blank');
         } else if (action === 'delete') {
             if (confirm('Delete this evaluation?')) {
@@ -414,7 +415,7 @@ function renderTable(data) {
                 return;
             }
 
-            const origin = window.location.origin; // e.g., https://oppmosystems-production.up.railway.app
+            const origin = window.location.origin;
             const reviewUrl = `${origin}/evaluation/head-review/${evaluation.head_review_token}`;
 
             Swal.fire({
@@ -431,7 +432,7 @@ function renderTable(data) {
                     copyBtn.addEventListener('click', () => {
                         const linkInput = document.getElementById('copyEvalLink');
                         linkInput.select();
-                        linkInput.setSelectionRange(0, 99999); // For mobile devices
+                        linkInput.setSelectionRange(0, 99999);
                         document.execCommand('copy');
                         Swal.fire('Copied!', 'Head Review link copied to clipboard.', 'success');
                     });
@@ -442,10 +443,13 @@ function renderTable(data) {
         console.error(err);
         Swal.fire('Error!', err.message || 'Action failed.', 'error');
     } finally {
-        Swal.close();
-        e.target.value = ''; // Reset select
+        // Reset select dropdown
+        e.target.value = '';
+
+        // Only close Swal if it was the loading Swal (not 'link')
+        if (action !== 'link') Swal.close();
     }
-});;
+});
 
 
     // --- Track Selection ---
