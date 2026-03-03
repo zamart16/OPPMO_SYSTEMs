@@ -163,7 +163,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- Combined Filtering ---
     function filterTable() {
         const searchText = searchInput.value.toLowerCase();
-        const searchStatus = statusFilter.value.toLowerCase();
         const department = departmentFilter.value;
         const startDate = startDateFilter.value;
         const endDate = endDateFilter.value;
@@ -180,9 +179,7 @@ document.addEventListener('DOMContentLoaded', function () {
             `.toLowerCase();
 
             const matchesText = combinedText.includes(searchText);
-            const matchesStatus = combinedText.includes(searchStatus);
             const matchesDepartment = !department || e.office_name === department;
-
             const evalDate = e.date_evaluation ? new Date(e.date_evaluation) : null;
             const afterStart = !startDate || (evalDate && evalDate >= new Date(startDate));
             const beforeEnd = !endDate || (evalDate && evalDate <= new Date(endDate));
