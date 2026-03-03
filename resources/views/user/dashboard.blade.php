@@ -2,6 +2,7 @@
 <html lang="en">
 
 @include('layout.header')
+@include('layout.reloading')
 
 <body class="bg-gray-50 min-h-screen">
 @include('layout.style')
