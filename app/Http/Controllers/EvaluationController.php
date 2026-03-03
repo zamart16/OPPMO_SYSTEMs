@@ -128,6 +128,7 @@ public function store(Request $request)
         ], 500);
     }
 }
+use App\Models\EvaluationLink;
 
 public function list()
 {
@@ -136,18 +137,16 @@ public function list()
         $userDepartment = $user->department ?? null;
         $userRole = strtolower($user->role ?? '');
 
-        $query = Evaluation::with(['criteriaScores', 'digitalApprovals', 'evaluationLinks'])
+        $query = Evaluation::with(['criteriaScores', 'digitalApprovals'])
             ->orderBy('date_evaluation', 'asc');
 
         if ($userRole !== 'administrator') {
-            // Non-admins see only their department
             $query->where('office_name', $userDepartment);
         }
 
         $evaluations = $query->get();
 
         $result = $evaluations->map(function ($eval) {
-
             $criteriaScores = [
                 1 => null,
                 2 => null,
@@ -161,7 +160,6 @@ public function list()
 
             $hasIncomplete = in_array(null, $criteriaScores, true);
 
-            // Weighted total
             $poScore = 0;
             if (!$hasIncomplete) {
                 $poScore =
@@ -171,11 +169,9 @@ public function list()
                     (6.25 * $criteriaScores[4]);
             }
 
-            // Head approval check
             $headApproval = $eval->digitalApprovals
                 ->firstWhere('role', 'Head');
 
-            // Status logic
             if ($hasIncomplete) {
                 $status = 'PENDING';
             } elseif ($headApproval) {
@@ -184,21 +180,13 @@ public function list()
                 $status = 'For Office Head Review';
             }
 
-            // Evaluator (Prepared By)
             $evaluator = $eval->digitalApprovals
                 ->firstWhere('role', 'Prepared By');
 
-            // ✅ Get the active Head review link token
-            $headLink = $eval->evaluationLinks
-                ->where('reviewer_role', 'Head')
-                ->where('is_completed', false)
-                ->where(function($q) {
-                    $q->whereNull('expires_at')
-                      ->orWhere('expires_at', '>', now());
-                })
+            // ✅ Get active head review link token
+            $headReviewLink = EvaluationLink::active()
+                ->where('evaluation_id', $eval->id)
                 ->first();
-
-            $reviewToken = $headLink ? $headLink->token : null;
 
             return [
                 'id' => $eval->id,
@@ -211,7 +199,7 @@ public function list()
                 'evaluator' => $evaluator ? $evaluator->full_name : 'N/A',
                 'criteria_scores' => $eval->criteriaScores,
                 'digital_approvals' => $eval->digitalApprovals,
-                'head_review_token' => $reviewToken, // <-- include token for frontend
+                'head_review_token' => $headReviewLink?->token, // <-- add this
             ];
         });
 
@@ -226,7 +214,6 @@ public function list()
         ], 500);
     }
 }
-    
 
 // public function list()
 // {
