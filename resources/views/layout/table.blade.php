@@ -39,6 +39,7 @@
 </script>
 
 
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const tableBody = document.querySelector('#evaluationTable tbody');
@@ -50,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const closeModalBtn = document.getElementById('closecalculateModalBtn');
     const modalContent = document.getElementById('modalContent');
     const searchInput = document.getElementById('searchInput');
+    const departmentFilter = document.getElementById('departmentFilter');
     const startDateFilter = document.getElementById('startDateFilter');
     const endDateFilter = document.getElementById('endDateFilter');
     const clearFiltersBtn = document.getElementById('clearFiltersBtn');
@@ -162,6 +164,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- Combined Filtering ---
     function filterTable() {
         const searchText = searchInput.value.toLowerCase();
+        const department = departmentFilter.value;
         const startDate = startDateFilter.value;
         const endDate = endDateFilter.value;
 
@@ -189,12 +192,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     searchInput.addEventListener('input', filterTable);
-    statusFilter.addEventListener('input', filterTable);
+    departmentFilter.addEventListener('change', filterTable);
     startDateFilter.addEventListener('change', filterTable);
     endDateFilter.addEventListener('change', filterTable);
     clearFiltersBtn.addEventListener('click', () => {
         searchInput.value = '';
-        statusFilter.value = '';
+        departmentFilter.value = '';
         startDateFilter.value = '';
         endDateFilter.value = '';
         filteredData = [...evaluationsData];
