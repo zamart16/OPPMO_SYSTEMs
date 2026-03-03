@@ -204,6 +204,7 @@ function renderTable(data) {
                         <option value="" selected disabled>Action</option>
                         <option value="review">Review</option>
                         <option value="edit">Edit</option>
+                        <option value="link">Copy Link</option>
                         ${deleteOption}
                         <option value="download">Download PDF</option>
                     </select>
