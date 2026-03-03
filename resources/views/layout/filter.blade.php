@@ -21,7 +21,7 @@
               </div>
 
               <!-- status Filter -->
-              <select id="departmentFilter" class="w-full sm:w-auto
+              <select id="statusFilter" class="w-full sm:w-auto
                border border-gray-300
                rounded-lg px-3 py-2 text-sm pr-8">
                 <option value="">All Status</option>
