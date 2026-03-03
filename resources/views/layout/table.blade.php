@@ -290,23 +290,113 @@ function renderTable(data) {
         // -----------------------------
     // DROPDOWN ACTIONS WITH LOADING
     // -----------------------------
+//     tableBody.addEventListener('change', async function(e) {
+//         if (!e.target.classList.contains('evaluationAction')) return;
+//         const evaluationId = e.target.dataset.id;
+//         const action = e.target.value;
+//         if (!evaluationId) return;
+
+//         Swal.fire({ title: 'Processing...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+//         try {
+//             if (action === 'review') {
+//                 await viewEvaluation(evaluationId);
+//             } else if (action === 'edit') {
+//                 await updateEvaluation(evaluationId);
+//             } else if (action === 'download') {
+//                 // Open PDF download in new tab
+//                 window.open(`/evaluations/${evaluationId}/download`, '_blank');
+//             } else if (action === 'link') {
+//             // -----------------------
+//             // Copy Head Review Link
+//             // -----------------------
+//             // Build absolute URL
+//             const origin = window.location.origin;
+//             const reviewUrl = `${origin}/evaluation/head-review/${evaluationId}`;
+
+//             Swal.fire({
+//                 icon: 'info',
+//                 title: 'Head Review Link',
+//                 html: `
+//                     <input type="text" id="copyEvalLink" class="swal2-input" value="${reviewUrl}" readonly>
+//                     <button id="copyLinkBtn" class="swal2-confirm swal2-styled" style="margin-top:5px;">Copy Link</button>
+//                 `,
+//                 showConfirmButton: false,
+//                 showCloseButton: true,
+//                 didOpen: () => {
+//                     const copyBtn = document.getElementById('copyLinkBtn');
+//                     copyBtn.addEventListener('click', () => {
+//                         const linkInput = document.getElementById('copyEvalLink');
+//                         linkInput.select();
+//                         linkInput.setSelectionRange(0, 99999); // For mobile devices
+//                         document.execCommand('copy');
+//                         Swal.fire('Copied!', 'Head Review link copied to clipboard.', 'success');
+//                     });
+//                 }
+//             });
+//         }
+//     } catch (err) {
+//         console.error(err);
+//         Swal.fire('Error!', err.message || 'Action failed.', 'error');
+//     } finally {
+//         Swal.close();
+//         e.target.value = ''; // Reset select
+//     }
+// });
+//             else if (action === 'delete') {
+//                 if (confirm('Delete this evaluation?')) {
+//                     const res = await fetch(`/evaluations/${evaluationId}`, {
+//                         method: 'DELETE',
+//                         headers: {
+//                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+//                             'Accept': 'application/json'
+//                         }
+//                     });
+//                     const data = await res.json();
+//                     if (data.success) fetchEvaluations();
+//                     else alert(data.message || 'Delete failed.');
+//                 }
+//             }
+//         } catch (err) {
+//             console.error(err);
+//             alert('Action failed: ' + err.message);
+//         } finally {
+//             Swal.close();
+//             e.target.value = '';
+//         }
+//     });
+
     tableBody.addEventListener('change', async function(e) {
-        if (!e.target.classList.contains('evaluationAction')) return;
-        const evaluationId = e.target.dataset.id;
-        const action = e.target.value;
-        if (!evaluationId) return;
+    if (!e.target.classList.contains('evaluationAction')) return;
 
-        Swal.fire({ title: 'Processing...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+    const evaluationId = e.target.dataset.id;
+    const action = e.target.value;
+    if (!evaluationId) return;
 
-        try {
-            if (action === 'review') {
-                await viewEvaluation(evaluationId);
-            } else if (action === 'edit') {
-                await updateEvaluation(evaluationId);
-            } else if (action === 'download') {
-                // Open PDF download in new tab
-                window.open(`/evaluations/${evaluationId}/download`, '_blank');
-            } else if (action === 'link') {
+    Swal.fire({ title: 'Processing...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+    try {
+        if (action === 'review') {
+            await viewEvaluation(evaluationId);
+        } else if (action === 'edit') {
+            await updateEvaluation(evaluationId);
+        } else if (action === 'download') {
+            // Open PDF download in new tab
+            window.open(`/evaluations/${evaluationId}/download`, '_blank');
+        } else if (action === 'delete') {
+            if (confirm('Delete this evaluation?')) {
+                const res = await fetch(`/evaluations/${evaluationId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json'
+                    }
+                });
+                const data = await res.json();
+                if (data.success) fetchEvaluations();
+                else alert(data.message || 'Delete failed.');
+            }
+        } else if (action === 'link') {
             // -----------------------
             // Copy Head Review Link
             // -----------------------
@@ -343,28 +433,6 @@ function renderTable(data) {
         e.target.value = ''; // Reset select
     }
 });
-            else if (action === 'delete') {
-                if (confirm('Delete this evaluation?')) {
-                    const res = await fetch(`/evaluations/${evaluationId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                            'Accept': 'application/json'
-                        }
-                    });
-                    const data = await res.json();
-                    if (data.success) fetchEvaluations();
-                    else alert(data.message || 'Delete failed.');
-                }
-            }
-        } catch (err) {
-            console.error(err);
-            alert('Action failed: ' + err.message);
-        } finally {
-            Swal.close();
-            e.target.value = '';
-        }
-    });
 
 
     // --- Track Selection ---
