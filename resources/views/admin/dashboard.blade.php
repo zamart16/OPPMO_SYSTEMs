@@ -557,6 +557,41 @@
   </div>
 </div>
 
+
+
+<script>
+(function() {
+    function detectDevTools() {
+        const threshold = 160;
+        const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+        const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+
+        if (widthThreshold || heightThreshold) {
+            // Redirect to warning page
+            window.location.href = "/devtools-warning"; // create a route/page explaining access denied
+        }
+    }
+
+    setInterval(detectDevTools, 500);
+})();
+
+// Disable F12, Ctrl+Shift+I / Cmd+Option+I / Ctrl+Shift+J
+document.addEventListener('keydown', function(e) {
+    if (
+        e.key === "F12" ||                                     // F12
+        (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J")) ||  // Ctrl+Shift+I / Ctrl+Shift+J
+        (e.metaKey && e.altKey && e.key === "I")               // Cmd+Option+I (Mac)
+    ) {
+        e.preventDefault(); // Block the key
+        Swal.fire({
+            icon: 'warning',
+            title: 'Action blocked!',
+            text: 'Opening Developer Tools is not allowed!',
+            confirmButtonText: 'Ok'
+        });
+    }
+});
+</script> 
 </body>
 
 </html>
