@@ -15,7 +15,7 @@
           </button>
         </div>
       </div>
-      <div class="p-4 sm:p-6 md:p-8">
+      <div class="hidden p-4 sm:p-6 md:p-8">
         <div class="mb-8">
         </div>
         <div class="mb-8">
