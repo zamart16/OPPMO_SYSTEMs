@@ -129,7 +129,6 @@ public function store(Request $request)
     }
 }
 
-
 public function list()
 {
     try {
@@ -137,7 +136,7 @@ public function list()
         $userDepartment = $user->department ?? null;
         $userRole = strtolower($user->role ?? '');
 
-        $query = Evaluation::with(['criteriaScores', 'digitalApprovals'])
+        $query = Evaluation::with(['criteriaScores', 'digitalApprovals', 'evaluationLinks'])
             ->orderBy('date_evaluation', 'asc');
 
         if ($userRole !== 'administrator') {
@@ -160,10 +159,9 @@ public function list()
                 $criteriaScores[$score->criteria_id] = $score->number_rating;
             }
 
-            // Check if any criteria is incomplete
             $hasIncomplete = in_array(null, $criteriaScores, true);
 
-            // Weighted total (keep your logic)
+            // Weighted total
             $poScore = 0;
             if (!$hasIncomplete) {
                 $poScore =
@@ -177,7 +175,7 @@ public function list()
             $headApproval = $eval->digitalApprovals
                 ->firstWhere('role', 'Head');
 
-            // ✅ UPDATED STATUS LOGIC (Head-based)
+            // Status logic
             if ($hasIncomplete) {
                 $status = 'PENDING';
             } elseif ($headApproval) {
@@ -190,6 +188,18 @@ public function list()
             $evaluator = $eval->digitalApprovals
                 ->firstWhere('role', 'Prepared By');
 
+            // ✅ Get the active Head review link token
+            $headLink = $eval->evaluationLinks
+                ->where('reviewer_role', 'Head')
+                ->where('is_completed', false)
+                ->where(function($q) {
+                    $q->whereNull('expires_at')
+                      ->orWhere('expires_at', '>', now());
+                })
+                ->first();
+
+            $reviewToken = $headLink ? $headLink->token : null;
+
             return [
                 'id' => $eval->id,
                 'supplier_name' => $eval->supplier_name ?? 'N/A',
@@ -201,6 +211,7 @@ public function list()
                 'evaluator' => $evaluator ? $evaluator->full_name : 'N/A',
                 'criteria_scores' => $eval->criteriaScores,
                 'digital_approvals' => $eval->digitalApprovals,
+                'head_review_token' => $reviewToken, // <-- include token for frontend
             ];
         });
 
@@ -215,6 +226,93 @@ public function list()
         ], 500);
     }
 }
+    
+
+// public function list()
+// {
+//     try {
+//         $user = auth()->user();
+//         $userDepartment = $user->department ?? null;
+//         $userRole = strtolower($user->role ?? '');
+
+//         $query = Evaluation::with(['criteriaScores', 'digitalApprovals'])
+//             ->orderBy('date_evaluation', 'asc');
+
+//         if ($userRole !== 'administrator') {
+//             // Non-admins see only their department
+//             $query->where('office_name', $userDepartment);
+//         }
+
+//         $evaluations = $query->get();
+
+//         $result = $evaluations->map(function ($eval) {
+
+//             $criteriaScores = [
+//                 1 => null,
+//                 2 => null,
+//                 3 => null,
+//                 4 => null,
+//             ];
+
+//             foreach ($eval->criteriaScores as $score) {
+//                 $criteriaScores[$score->criteria_id] = $score->number_rating;
+//             }
+
+//             // Check if any criteria is incomplete
+//             $hasIncomplete = in_array(null, $criteriaScores, true);
+
+//             // Weighted total (keep your logic)
+//             $poScore = 0;
+//             if (!$hasIncomplete) {
+//                 $poScore =
+//                     (5 * $criteriaScores[1]) +
+//                     (7.5 * $criteriaScores[2]) +
+//                     (6.25 * $criteriaScores[3]) +
+//                     (6.25 * $criteriaScores[4]);
+//             }
+
+//             // Head approval check
+//             $headApproval = $eval->digitalApprovals
+//                 ->firstWhere('role', 'Head');
+
+//             // ✅ UPDATED STATUS LOGIC (Head-based)
+//             if ($hasIncomplete) {
+//                 $status = 'PENDING';
+//             } elseif ($headApproval) {
+//                 $status = 'Approved';
+//             } else {
+//                 $status = 'For Office Head Review';
+//             }
+
+//             // Evaluator (Prepared By)
+//             $evaluator = $eval->digitalApprovals
+//                 ->firstWhere('role', 'Prepared By');
+
+//             return [
+//                 'id' => $eval->id,
+//                 'supplier_name' => $eval->supplier_name ?? 'N/A',
+//                 'po_no' => $eval->po_no ?? 'N/A',
+//                 'date_evaluation' => $eval->date_evaluation ?? null,
+//                 'department' => $eval->office_name ?? 'N/A',
+//                 'eval_score' => !$hasIncomplete ? round($poScore, 2) : null,
+//                 'status' => $status,
+//                 'evaluator' => $evaluator ? $evaluator->full_name : 'N/A',
+//                 'criteria_scores' => $eval->criteriaScores,
+//                 'digital_approvals' => $eval->digitalApprovals,
+//             ];
+//         });
+
+//         return response()->json([
+//             'evaluations' => $result
+//         ]);
+
+//     } catch (\Exception $e) {
+//         Log::error('Evaluation list fetch failed', ['error' => $e->getMessage()]);
+//         return response()->json([
+//             'message' => 'Failed to fetch evaluations: ' . $e->getMessage()
+//         ], 500);
+//     }
+// }
 
 // Delete evaluation remains the same
 public function destroy($id)
