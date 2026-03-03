@@ -162,6 +162,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- Combined Filtering ---
     function filterTable() {
         const searchText = searchInput.value.toLowerCase();
+        const searchStatus = statusFilter.value.toLowerCase();
         const department = departmentFilter.value;
         const startDate = startDateFilter.value;
         const endDate = endDateFilter.value;
@@ -173,10 +174,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 ${e.date_evaluation ?? ''}
                 ${e.digital_approvals?.[0]?.full_name ?? ''}
                 ${e.office_name ?? ''}
+                ${e.status ?? ''}
                 ${calculateWeightedScore(e.criteria_scores) ?? ''}
             `.toLowerCase();
 
             const matchesText = combinedText.includes(searchText);
+            const matchesStatus = combinedText.includes(searchStatus);
             const matchesDepartment = !department || e.office_name === department;
 
             const evalDate = e.date_evaluation ? new Date(e.date_evaluation) : null;
@@ -190,11 +193,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     searchInput.addEventListener('input', filterTable);
+    statusFilter.addEventListener('input', filterTable);
     departmentFilter.addEventListener('change', filterTable);
     startDateFilter.addEventListener('change', filterTable);
     endDateFilter.addEventListener('change', filterTable);
     clearFiltersBtn.addEventListener('click', () => {
         searchInput.value = '';
+        statusFilter.value = '';
         departmentFilter.value = '';
         startDateFilter.value = '';
         endDateFilter.value = '';
@@ -351,6 +356,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const startDateFilter = document.getElementById('startDateFilter');
     const endDateFilter = document.getElementById('endDateFilter');
     const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+    const statusFilter = document.getElementById('statusFilter');
 
     fetchEvaluations();
 
@@ -452,6 +458,7 @@ async function fetchEvaluations() {
         const department = departmentFilter.value;
         const startDate = startDateFilter.value;
         const endDate = endDateFilter.value;
+        const status = departmentFilter.value;
 
         const filtered = evaluationsData.filter(e => {
             const combinedText = `
@@ -464,6 +471,7 @@ async function fetchEvaluations() {
             `.toLowerCase();
 
             const matchesText = combinedText.includes(searchText);
+            const matchesTextStatus = combinedText.includes(searchText);
             const matchesDepartment = !department || e.office_name === department;
 
             const evalDate = e.date_evaluation ? new Date(e.date_evaluation) : null;
