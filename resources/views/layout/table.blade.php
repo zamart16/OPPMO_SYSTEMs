@@ -161,35 +161,69 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // --- Combined Filtering ---
-    function filterTable() {
-        const searchText = searchInput.value.toLowerCase();
-        const department = departmentFilter.value;
-        const startDate = startDateFilter.value;
-        const endDate = endDateFilter.value;
+ // --- Combined Filtering ---
+function filterTable() {
+    const searchText = searchInput.value.toLowerCase();
+    const departmentValue = departmentFilter.value;
+    const startDate = startDateFilter.value;
+    const endDate = endDateFilter.value;
 
-        filteredData = evaluationsData.filter(e => {
-            const combinedText = `
-                ${e.supplier_name ?? ''}
-                ${e.po_no ?? ''}
-                ${e.date_evaluation ?? ''}
-                ${e.digital_approvals?.[0]?.full_name ?? ''}
-                ${e.office_name ?? ''}
-                ${e.status ?? ''}
-                ${calculateWeightedScore(e.criteria_scores) ?? ''}
-            `.toLowerCase();
+    filteredData = evaluationsData.filter(e => {
 
-            const matchesText = combinedText.includes(searchText);
-            const matchesDepartment = !department || e.office_name === department;
-            const evalDate = e.date_evaluation ? new Date(e.date_evaluation) : null;
-            const afterStart = !startDate || (evalDate && evalDate >= new Date(startDate));
-            const beforeEnd = !endDate || (evalDate && evalDate <= new Date(endDate));
+        // --- Compute weighted score (same logic as render) ---
+        const weightedScore = calculateWeightedScore(e.criteria_scores);
+        const hasIncomplete = weightedScore === null;
+        const evaluator = e.digital_approvals?.[0]?.full_name ?? null;
 
-            return matchesText && matchesDepartment && afterStart && beforeEnd;
-        });
+        let status = 'PENDING';
+        if (!hasIncomplete && evaluator) {
+            if (weightedScore >= 60) {
+                status = 'Approved';
+            } else {
+                status = 'Fail / For Office Head Review';
+            }
+        }
 
-        renderTable(filteredData);
-    }
+        // --- Combined Search Text ---
+        const combinedText = `
+            ${e.supplier_name ?? ''}
+            ${e.po_no ?? ''}
+            ${e.date_evaluation ?? ''}
+            ${e.digital_approvals?.[0]?.full_name ?? ''}
+            ${e.office_name ?? ''}
+            ${status}
+            ${weightedScore ?? ''}
+        `.toLowerCase();
+
+        const matchesText = combinedText.includes(searchText);
+
+        // --- Department OR Status Filter ---
+        let matchesDepartment = true;
+
+        if (departmentValue) {
+            if (
+                departmentValue === 'PENDING' ||
+                departmentValue === 'Approved' ||
+                departmentValue === 'Fail / For Office Head Review'
+            ) {
+                // Filter by Status
+                matchesDepartment = status === departmentValue;
+            } else {
+                // Filter by Department Name
+                matchesDepartment = e.office_name === departmentValue;
+            }
+        }
+
+        // --- Date Filter ---
+        const evalDate = e.date_evaluation ? new Date(e.date_evaluation) : null;
+        const afterStart = !startDate || (evalDate && evalDate >= new Date(startDate));
+        const beforeEnd = !endDate || (evalDate && evalDate <= new Date(endDate));
+
+        return matchesText && matchesDepartment && afterStart && beforeEnd;
+    });
+
+    renderTable(filteredData);
+}
 
     searchInput.addEventListener('input', filterTable);
     departmentFilter.addEventListener('change', filterTable);
