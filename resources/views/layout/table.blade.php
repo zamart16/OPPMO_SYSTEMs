@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
- // --- Combined Filtering ---
+// --- Combined Filtering ---
 function filterTable() {
     const searchText = searchInput.value.toLowerCase();
     const departmentValue = departmentFilter.value;
@@ -170,17 +170,24 @@ function filterTable() {
 
     filteredData = evaluationsData.filter(e => {
 
-        // --- Compute weighted score (same logic as render) ---
+        // --- Determine status based on digital_approvals ---
         const weightedScore = calculateWeightedScore(e.criteria_scores);
         const hasIncomplete = weightedScore === null;
-        const evaluator = e.digital_approvals?.[0]?.full_name ?? null;
+
+        const approvals = e.digital_approvals ?? [];
+
+        // Check if any approval has role === 'Head'
+        const hasHeadApproval = approvals.some(a => 
+            a.role && a.role.toLowerCase() === 'head'
+        );
 
         let status = 'PENDING';
-        if (!hasIncomplete && evaluator) {
-            if (weightedScore >= 60) {
+
+        if (!hasIncomplete) {
+            if (hasHeadApproval) {
                 status = 'Approved';
             } else {
-                status = 'Fail / For Office Head Review';
+                status = 'For Office Head Review';
             }
         }
 
@@ -189,7 +196,7 @@ function filterTable() {
             ${e.supplier_name ?? ''}
             ${e.po_no ?? ''}
             ${e.date_evaluation ?? ''}
-            ${e.digital_approvals?.[0]?.full_name ?? ''}
+            ${approvals[0]?.full_name ?? ''}
             ${e.office_name ?? ''}
             ${status}
             ${weightedScore ?? ''}
@@ -204,12 +211,10 @@ function filterTable() {
             if (
                 departmentValue === 'PENDING' ||
                 departmentValue === 'Approved' ||
-                departmentValue === 'Fail / For Office Head Review'
+                departmentValue === 'For Office Head Review'
             ) {
-                // Filter by Status
                 matchesDepartment = status === departmentValue;
             } else {
-                // Filter by Department Name
                 matchesDepartment = e.office_name === departmentValue;
             }
         }
