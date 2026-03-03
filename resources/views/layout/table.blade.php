@@ -101,24 +101,54 @@ document.addEventListener('DOMContentLoaded', function () {
         return ((scoreA*5) + (scoreB*7.5) + (scoreC*6.25) + (scoreD*6.25)).toFixed(2);
     }
 
+    // --- Determine Status Helper (NEW CENTRALIZED LOGIC) ---
+    function determineStatus(evaluation) {
+        const weightedScore = calculateWeightedScore(evaluation.criteria_scores);
+        const hasIncomplete = weightedScore === null;
+
+        const approvals = evaluation.digital_approvals ?? [];
+        const hasHeadApproval = approvals.some(a =>
+            a.role && a.role.toLowerCase() === 'head'
+        );
+
+        if (hasIncomplete) {
+            return {
+                status: 'PENDING',
+                statusClass: 'bg-yellow-200 text-yellow-700',
+                scoreClass: ''
+            };
+        }
+
+        if (hasHeadApproval) {
+            return {
+                status: 'Approved',
+                statusClass: 'bg-green-200 text-green-700',
+                scoreClass: 'bg-green-100 text-green-800 rounded'
+            };
+        }
+
+        return {
+            status: 'For Office Head Review',
+            statusClass: 'bg-red-200 text-red-700',
+            scoreClass: 'bg-red-100 text-red-800 rounded'
+        };
+    }
+
     // --- Render Table ---
     function renderTable(data) {
         tableBody.innerHTML = '';
+
         data.forEach((evaluation, index) => {
-            const weightedScore = calculateWeightedScore(evaluation.criteria_scores) ?? '';
-            const hasIncomplete = weightedScore === '';
+            const weightedScore = calculateWeightedScore(evaluation.criteria_scores);
+            const hasIncomplete = weightedScore === null;
             const evaluator = evaluation.digital_approvals?.[0]?.full_name ?? null;
 
-            let status = 'PENDING';
-            let statusClass = 'bg-yellow-200 text-yellow-700';
-            if (!hasIncomplete && evaluator) {
-                if (weightedScore >= 60) { status = 'Approved'; statusClass = 'bg-green-200 text-green-700'; }
-                else { status = 'Fail / For Office Head Review'; statusClass = 'bg-red-200 text-red-700'; }
-            }
-            // --- Conditional Delete Option ---
+            const { status, statusClass, scoreClass } = determineStatus(evaluation);
+
             const deleteOption = currentUserRole !== 'end_user'
                 ? `<option value="delete">Delete</option>`
                 : '';
+
             const row = `
                 <tr class="hover:bg-orange-100 transition">
                     <td class="px-6 py-4"><input type="checkbox" class="rowCheckbox" value="${evaluation.id}"></td>
@@ -128,10 +158,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     <td class="px-6 py-4">${evaluation.date_evaluation || 'PENDING'}</td>
                     <td class="px-6 py-4">${expandableCell(evaluator)}</td>
                     <td class="px-6 py-4">${expandableCell(evaluation.department)}</td>
-                    <td class="px-6 py-4 font-semibold ${hasIncomplete ? '' : weightedScore >= 60 ? 'bg-green-100 text-green-800 rounded' : 'bg-red-100 text-red-800 rounded'}">
+                    <td class="px-6 py-4 font-semibold ${scoreClass}">
                         <strong>${hasIncomplete ? 'PENDING' : `${weightedScore}%`}</strong>
                     </td>
-                    <td class="px-6 py-4"><span class="px-2 py-1 text-xs rounded ${statusClass}">${status}</span></td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 text-xs rounded ${statusClass}">
+                            ${status}
+                        </span>
+                    </td>
                     <td class="px-6 py-4">
                         <select data-id="${evaluation.id}" class="evaluationAction w-36 bg-orange-500 text-white font-semibold px-3 py-2 rounded-lg text-sm shadow-sm
                             focus:outline-none focus:ring-2 focus:ring-orange-300 hover:bg-orange-600 transition">
@@ -150,90 +184,57 @@ document.addEventListener('DOMContentLoaded', function () {
         updateSelectedRows();
     }
 
-    // --- Expand/Collapse ---
-    tableBody.addEventListener('click', function(e) {
-        if (!e.target.classList.contains('expand-btn')) return;
-        const wrapper = e.target.previousElementSibling;
-        if (wrapper.classList.contains('truncate-text')) {
-            wrapper.classList.remove('truncate-text'); wrapper.classList.add('expanded-text'); e.target.textContent = "Collapse";
-        } else {
-            wrapper.classList.add('truncate-text'); wrapper.classList.remove('expanded-text'); e.target.textContent = "Expand";
-        }
-    });
+    // --- Combined Filtering ---
+    function filterTable() {
+        const searchText = searchInput.value.toLowerCase();
+        const departmentValue = departmentFilter.value;
+        const startDate = startDateFilter.value;
+        const endDate = endDateFilter.value;
 
-// --- Combined Filtering ---
-function filterTable() {
-    const searchText = searchInput.value.toLowerCase();
-    const departmentValue = departmentFilter.value;
-    const startDate = startDateFilter.value;
-    const endDate = endDateFilter.value;
+        filteredData = evaluationsData.filter(e => {
+            const weightedScore = calculateWeightedScore(e.criteria_scores);
+            const { status } = determineStatus(e);
 
-    filteredData = evaluationsData.filter(e => {
+            const combinedText = `
+                ${e.supplier_name ?? ''}
+                ${e.po_no ?? ''}
+                ${e.date_evaluation ?? ''}
+                ${e.digital_approvals?.[0]?.full_name ?? ''}
+                ${e.office_name ?? ''}
+                ${status}
+                ${weightedScore ?? ''}
+            `.toLowerCase();
 
-        // --- Determine status based on digital_approvals ---
-        const weightedScore = calculateWeightedScore(e.criteria_scores);
-        const hasIncomplete = weightedScore === null;
+            const matchesText = combinedText.includes(searchText);
 
-        const approvals = e.digital_approvals ?? [];
-
-        // Check if any approval has role === 'Head'
-        const hasHeadApproval = approvals.some(a => 
-            a.role && a.role.toLowerCase() === 'head'
-        );
-
-        let status = 'PENDING';
-
-        if (!hasIncomplete) {
-            if (hasHeadApproval) {
-                status = 'Approved';
-            } else {
-                status = 'For Office Head Review';
+            let matchesDepartment = true;
+            if (departmentValue) {
+                if (
+                    departmentValue === 'PENDING' ||
+                    departmentValue === 'Approved' ||
+                    departmentValue === 'For Office Head Review'
+                ) {
+                    matchesDepartment = status === departmentValue;
+                } else {
+                    matchesDepartment = e.office_name === departmentValue;
+                }
             }
-        }
 
-        // --- Combined Search Text ---
-        const combinedText = `
-            ${e.supplier_name ?? ''}
-            ${e.po_no ?? ''}
-            ${e.date_evaluation ?? ''}
-            ${approvals[0]?.full_name ?? ''}
-            ${e.office_name ?? ''}
-            ${status}
-            ${weightedScore ?? ''}
-        `.toLowerCase();
+            const evalDate = e.date_evaluation ? new Date(e.date_evaluation) : null;
+            const afterStart = !startDate || (evalDate && evalDate >= new Date(startDate));
+            const beforeEnd = !endDate || (evalDate && evalDate <= new Date(endDate));
 
-        const matchesText = combinedText.includes(searchText);
+            return matchesText && matchesDepartment && afterStart && beforeEnd;
+        });
 
-        // --- Department OR Status Filter ---
-        let matchesDepartment = true;
-
-        if (departmentValue) {
-            if (
-                departmentValue === 'PENDING' ||
-                departmentValue === 'Approved' ||
-                departmentValue === 'For Office Head Review'
-            ) {
-                matchesDepartment = status === departmentValue;
-            } else {
-                matchesDepartment = e.office_name === departmentValue;
-            }
-        }
-
-        // --- Date Filter ---
-        const evalDate = e.date_evaluation ? new Date(e.date_evaluation) : null;
-        const afterStart = !startDate || (evalDate && evalDate >= new Date(startDate));
-        const beforeEnd = !endDate || (evalDate && evalDate <= new Date(endDate));
-
-        return matchesText && matchesDepartment && afterStart && beforeEnd;
-    });
-
-    renderTable(filteredData);
-}
+        renderTable(filteredData);
+    }
 
     searchInput.addEventListener('input', filterTable);
     departmentFilter.addEventListener('change', filterTable);
     startDateFilter.addEventListener('change', filterTable);
     endDateFilter.addEventListener('change', filterTable);
+
     clearFiltersBtn.addEventListener('click', () => {
         searchInput.value = '';
         departmentFilter.value = '';
