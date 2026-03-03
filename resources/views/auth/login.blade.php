@@ -505,7 +505,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 text: response.data.message,
                 confirmButtonText: 'OK'
             }).then(() => {
-                window.location.href = '/login';
+                window.location.href = '/';
             });
 
         } catch (error) {
