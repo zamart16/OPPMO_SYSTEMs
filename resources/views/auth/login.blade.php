@@ -452,39 +452,85 @@ retakeBtn.addEventListener('click', () => {
 
 
 
-
 <script>
-// AJAX registration
-const form = document.getElementById('registerForm');
-form.addEventListener('submit', async function(e){
-    e.preventDefault();
-    const formData = new FormData(form);
+document.addEventListener('DOMContentLoaded', function () {
 
-    Swal.fire({
-      title: 'Processing...',
-      text: 'Please wait while we create your account.',
-      allowOutsideClick: false,
-      didOpen: () => Swal.showLoading()
-    });
+    const registerForm = document.querySelector('#registerForm');
 
-    try{
-        const res = await axios.post("{{ route('register') }}", formData);
-        Swal.fire('Success!', res.data.message || 'Account registered successfully!', 'success');
-        form.reset();
-        closeModal();
-        canvas.classList.add('hidden');
-        startCameraBtn.classList.remove('hidden');
-    }catch(err){
-        console.error(err.response?.data);
-        let messages = ['Something went wrong.'];
-        if(err.response?.data?.errors){
-            messages = [];
-            for(let key in err.response.data.errors){
-                messages.push(err.response.data.errors[key].join(' '));
-            }
+    if (!registerForm) return;
+
+    registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const name = registerForm.querySelector('input[name="name"]').value.trim();
+        const department = registerForm.querySelector('input[name="department"]').value.trim();
+        const role = registerForm.querySelector('select[name="role"]').value;
+        const email = registerForm.querySelector('input[type="email"]').value.trim();
+        const password = registerForm.querySelector('input[name="password"]').value.trim();
+        const password_confirmation = registerForm.querySelector('input[name="password_confirmation"]').value.trim();
+
+        if (!name || !department || !role || !email || !password || !password_confirmation) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Missing Fields',
+                text: 'Please fill in all required fields.'
+            });
+            return;
         }
-        Swal.fire({ icon:'error', title:'Oops...', html: messages.join('<br>') });
-    }
+
+        Swal.fire({
+            title: 'Registering...',
+            text: 'Please wait',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+
+        try {
+
+            const response = await axios.post('/register', {
+                name,
+                department,
+                role,
+                email,
+                password,
+                password_confirmation,
+                image: null // add base64 image here if needed
+            });
+
+            Swal.close();
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: response.data.message,
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = '/login';
+            });
+
+        } catch (error) {
+
+            Swal.close();
+
+            let message = 'Something went wrong. Please try again.';
+
+            if (error.response) {
+
+                if (error.response.status === 422) {
+                    message = error.response.data.message;
+                }
+                else if (error.response.data.message) {
+                    message = error.response.data.message;
+                }
+            }
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Registration Failed',
+                text: message
+            });
+        }
+    });
 });
 </script>
 
