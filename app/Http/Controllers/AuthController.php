@@ -97,7 +97,7 @@ class AuthController extends Controller
             'role' => 'required|in:end_user,administrator',
             'email' => 'required|email|unique:users,email',
             'password' => ['required', 'confirmed', Password::min(8)],
-            'image' => ['nullable', 'string'],
+            'image' => ['required', 'string'],
         ],
         [
             'email.unique' => 'This email is already registered. Please use another email.'
