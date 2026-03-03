@@ -497,12 +497,7 @@ async function fetchEvaluations() {
                     <td class="px-6 py-4">${makeExpandable(evaluation.date_evaluation || 'PENDING')}</td>
                     <td class="px-6 py-4"><strong>${makeExpandable(evaluator || 'PENDING')}</strong></td>
                     <td class="px-6 py-4">${makeExpandable(evaluation.department || 'PENDING')}</td>
-<td class="px-6 py-4 font-semibold
-    ${hasIncompleteCriteria ? '' :
-      weightedScore >= 60 ? 'bg-green-100 text-green-800 rounded' :
-                            'bg-red-100 text-red-800 rounded'}">
-    <strong>${hasIncompleteCriteria ? 'PENDING' : `${weightedScore}%`}</strong>
-</td>
+<td class="px-6 py-4 font-semibold ${hasIncompleteCriteria ? 'PENDING' : weightedScore >= 60 ? 'bg-green-100 text-green-800 rounded' : 'bg-red-100 text-red-800 rounded'}"><strong> ${hasIncompleteCriteria ? 'PENDING' : ${weightedScore}%}</strong> </td>
                     <td class="px-6 py-4"><span class="px-2 py-1 text-xs rounded ${statusClass}">${status}</span></td>
                     <td class="px-6 py-4">
                         <select data-id="${evaluation.id}" class="evaluationAction w-36 bg-orange-500 text-white font-semibold px-3 py-2 rounded-lg text-sm shadow-sm
