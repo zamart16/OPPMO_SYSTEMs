@@ -134,55 +134,83 @@ document.addEventListener('DOMContentLoaded', function () {
         };
     }
 
-    // --- Render Table ---
-    function renderTable(data) {
-        tableBody.innerHTML = '';
+  // --- Render Table ---
+function renderTable(data) {
+    tableBody.innerHTML = '';
 
-        data.forEach((evaluation, index) => {
-            const weightedScore = calculateWeightedScore(evaluation.criteria_scores);
-            const hasIncomplete = weightedScore === null;
-            const evaluator = evaluation.digital_approvals?.[0]?.full_name ?? null;
+    data.forEach((evaluation, index) => {
+        const weightedScore = calculateWeightedScore(evaluation.criteria_scores);
+        const hasIncomplete = weightedScore === null;
+        const evaluator = evaluation.digital_approvals?.[0]?.full_name ?? null;
 
-            const { status, statusClass, scoreClass } = determineStatus(evaluation);
+        // --- Determine status using Head Review logic ---
+        const { status, statusClass, scoreClass } = (() => {
+            const approvals = evaluation.digital_approvals ?? [];
+            const hasHeadApproval = approvals.some(a => a.role && a.role.toLowerCase() === 'head');
 
-            const deleteOption = currentUserRole !== 'end_user'
-                ? `<option value="delete">Delete</option>`
-                : '';
+            if (hasIncomplete) {
+                return {
+                    status: 'PENDING',
+                    statusClass: 'bg-yellow-200 text-yellow-700',
+                    scoreClass: ''
+                };
+            }
 
-            const row = `
-                <tr class="hover:bg-orange-100 transition">
-                    <td class="px-6 py-4"><input type="checkbox" class="rowCheckbox" value="${evaluation.id}"></td>
-                    <td class="px-6 py-4">${index + 1}</td>
-                    <td class="px-6 py-4">${expandableCell(evaluation.supplier_name)}</td>
-                    <td class="px-6 py-4">${expandableCell(evaluation.po_no)}</td>
-                    <td class="px-6 py-4">${evaluation.date_evaluation || 'PENDING'}</td>
-                    <td class="px-6 py-4">${expandableCell(evaluator)}</td>
-                    <td class="px-6 py-4">${expandableCell(evaluation.department)}</td>
-                    <td class="px-6 py-4 font-semibold ${scoreClass}">
-                        <strong>${hasIncomplete ? 'PENDING' : `${weightedScore}%`}</strong>
-                    </td>
-                    <td class="px-6 py-4">
-                        <span class="px-2 py-1 text-xs rounded ${statusClass}">
-                            ${status}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4">
-                        <select data-id="${evaluation.id}" class="evaluationAction w-36 bg-orange-500 text-white font-semibold px-3 py-2 rounded-lg text-sm shadow-sm
-                            focus:outline-none focus:ring-2 focus:ring-orange-300 hover:bg-orange-600 transition">
-                            <option value="" selected disabled>Action</option>
-                            <option value="review">Review</option>
-                            <option value="edit">Edit</option>
-                            ${deleteOption}
-                            <option value="download">Download PDF</option>
-                        </select>
-                    </td>
-                </tr>
-            `;
-            tableBody.insertAdjacentHTML('beforeend', row);
-        });
+            if (hasHeadApproval) {
+                return {
+                    status: 'Approved',
+                    statusClass: 'bg-green-200 text-green-700',
+                    scoreClass: 'bg-green-100 text-green-800 rounded'
+                };
+            }
 
-        updateSelectedRows();
-    }
+            return {
+                status: 'For Office Head Review',
+                statusClass: 'bg-red-200 text-red-700',
+                scoreClass: 'bg-red-100 text-red-800 rounded'
+            };
+        })();
+
+        // --- Conditional Delete Option ---
+        const deleteOption = currentUserRole !== 'end_user'
+            ? `<option value="delete">Delete</option>`
+            : '';
+
+        // --- Table Row with Expandable Cells ---
+        const row = `
+            <tr class="hover:bg-orange-100 transition">
+                <td class="px-6 py-4"><input type="checkbox" class="rowCheckbox" value="${evaluation.id}"></td>
+                <td class="px-6 py-4">${index + 1}</td>
+                <td class="px-6 py-4">${expandableCell(evaluation.supplier_name)}</td>
+                <td class="px-6 py-4">${expandableCell(evaluation.po_no)}</td>
+                <td class="px-6 py-4">${evaluation.date_evaluation || 'PENDING'}</td>
+                <td class="px-6 py-4">${expandableCell(evaluator)}</td>
+                <td class="px-6 py-4">${expandableCell(evaluation.department)}</td>
+                <td class="px-6 py-4 font-semibold ${scoreClass}">
+                    <strong>${hasIncomplete ? 'PENDING' : `${weightedScore}%`}</strong>
+                </td>
+                <td class="px-6 py-4">
+                    <span class="px-2 py-1 text-xs rounded ${statusClass}">
+                        ${status}
+                    </span>
+                </td>
+                <td class="px-6 py-4">
+                    <select data-id="${evaluation.id}" class="evaluationAction w-36 bg-orange-500 text-white font-semibold px-3 py-2 rounded-lg text-sm shadow-sm
+                        focus:outline-none focus:ring-2 focus:ring-orange-300 hover:bg-orange-600 transition">
+                        <option value="" selected disabled>Action</option>
+                        <option value="review">Review</option>
+                        <option value="edit">Edit</option>
+                        ${deleteOption}
+                        <option value="download">Download PDF</option>
+                    </select>
+                </td>
+            </tr>
+        `;
+        tableBody.insertAdjacentHTML('beforeend', row);
+    });
+
+    updateSelectedRows();
+}
 
     // --- Combined Filtering ---
     function filterTable() {
