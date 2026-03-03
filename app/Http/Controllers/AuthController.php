@@ -13,79 +13,161 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+    // public function register(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'name' => 'required|string|max:255',
+    //         'department' => 'required|string|max:255',
+    //         'role' => 'required|in:end_user,administrator',
+    //         'email' => 'required|email|unique:users,email',
+    //         'password' => ['required', 'confirmed', Password::min(8)],
+    //         'image' => ['nullable', 'string'],
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         return response()->json([
+    //             'message' => $validator->errors()->first()
+    //         ], 422);
+    //     }
+
+    //     $imageUrl = null;
+
+    //     if ($request->image) {
+    //         $imageData = base64_decode(
+    //             preg_replace('#^data:image/\w+;base64,#i', '', $request->image)
+    //         );
+
+    //         if ($imageData === false) {
+    //             return response()->json([
+    //                 'message' => 'Invalid image data.'
+    //             ], 400);
+    //         }
+
+    //         $fileName = 'profile_images/' . Str::uuid() . '.png';
+    //         $supabaseUrl = rtrim(env('SUPABASE_URL'), '/');
+    //         $supabaseKey = env('SUPABASE_SERVICE_ROLE_KEY');
+    //         $bucket = 'image';
+
+    //         try {
+    //             $response = Http::withHeaders([
+    //                 'apikey' => $supabaseKey,
+    //                 'Authorization' => 'Bearer ' . $supabaseKey,
+    //                 'Content-Type' => 'image/png',
+    //             ])->withBody($imageData, 'image/png')
+    //               ->put("$supabaseUrl/storage/v1/object/$bucket/$fileName");
+
+    //             if ($response->successful()) {
+    //                 $imageUrl = "$supabaseUrl/storage/v1/object/public/$bucket/$fileName";
+    //             } else {
+    //                 return response()->json([
+    //                     'message' => 'Image upload failed.'
+    //                 ], 500);
+    //             }
+
+    //         } catch (\Exception $e) {
+    //             return response()->json([
+    //                 'message' => 'Image upload error: ' . $e->getMessage()
+    //             ], 500);
+    //         }
+    //     }
+
+    //     User::create([
+    //         'name' => $request->name,
+    //         'department' => $request->department,
+    //         'role' => $request->role,
+    //         'email' => $request->email,
+    //         'password' => Hash::make($request->password),
+    //         'status' => 'inactive',
+    //         'image' => $imageUrl,
+    //     ]);
+
+    //     return response()->json([
+    //         'message' => 'Account created successfully. Waiting for admin approval.',
+    //         'image_url' => $imageUrl
+    //     ]);
+    // }
+
     public function register(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
+{
+    $validator = Validator::make(
+        $request->all(),
+        [
             'name' => 'required|string|max:255',
             'department' => 'required|string|max:255',
             'role' => 'required|in:end_user,administrator',
             'email' => 'required|email|unique:users,email',
             'password' => ['required', 'confirmed', Password::min(8)],
             'image' => ['nullable', 'string'],
-        ]);
+        ],
+        [
+            'email.unique' => 'This email is already registered. Please use another email.'
+        ]
+    );
 
-        if ($validator->fails()) {
+    if ($validator->fails()) {
+        return response()->json([
+            'message' => $validator->errors()->first()
+        ], 422);
+    }
+
+    $imageUrl = null;
+
+    if ($request->image) {
+
+        $imageData = base64_decode(
+            preg_replace('#^data:image/\w+;base64,#i', '', $request->image)
+        );
+
+        if ($imageData === false) {
             return response()->json([
-                'message' => $validator->errors()->first()
-            ], 422);
+                'message' => 'Invalid image data.'
+            ], 400);
         }
 
-        $imageUrl = null;
+        $fileName = 'profile_images/' . Str::uuid() . '.png';
+        $supabaseUrl = rtrim(env('SUPABASE_URL'), '/');
+        $supabaseKey = env('SUPABASE_SERVICE_ROLE_KEY');
+        $bucket = 'image';
 
-        if ($request->image) {
-            $imageData = base64_decode(
-                preg_replace('#^data:image/\w+;base64,#i', '', $request->image)
-            );
+        try {
+            $response = Http::withHeaders([
+                'apikey' => $supabaseKey,
+                'Authorization' => 'Bearer ' . $supabaseKey,
+                'Content-Type' => 'image/png',
+            ])
+            ->withBody($imageData, 'image/png')
+            ->put("$supabaseUrl/storage/v1/object/$bucket/$fileName");
 
-            if ($imageData === false) {
+            if ($response->successful()) {
+                $imageUrl = "$supabaseUrl/storage/v1/object/public/$bucket/$fileName";
+            } else {
                 return response()->json([
-                    'message' => 'Invalid image data.'
-                ], 400);
-            }
-
-            $fileName = 'profile_images/' . Str::uuid() . '.png';
-            $supabaseUrl = rtrim(env('SUPABASE_URL'), '/');
-            $supabaseKey = env('SUPABASE_SERVICE_ROLE_KEY');
-            $bucket = 'image';
-
-            try {
-                $response = Http::withHeaders([
-                    'apikey' => $supabaseKey,
-                    'Authorization' => 'Bearer ' . $supabaseKey,
-                    'Content-Type' => 'image/png',
-                ])->withBody($imageData, 'image/png')
-                  ->put("$supabaseUrl/storage/v1/object/$bucket/$fileName");
-
-                if ($response->successful()) {
-                    $imageUrl = "$supabaseUrl/storage/v1/object/public/$bucket/$fileName";
-                } else {
-                    return response()->json([
-                        'message' => 'Image upload failed.'
-                    ], 500);
-                }
-
-            } catch (\Exception $e) {
-                return response()->json([
-                    'message' => 'Image upload error: ' . $e->getMessage()
+                    'message' => 'Image upload failed.'
                 ], 500);
             }
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Image upload error: ' . $e->getMessage()
+            ], 500);
         }
-
-        User::create([
-            'name' => $request->name,
-            'department' => $request->department,
-            'role' => $request->role,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'status' => 'inactive',
-            'image' => $imageUrl,
-        ]);
-
-        return response()->json([
-            'message' => 'Account created successfully. Waiting for admin approval.',
-            'image_url' => $imageUrl
-        ]);
     }
+
+    User::create([
+        'name' => $request->name,
+        'department' => $request->department,
+        'role' => $request->role,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'status' => 'inactive',
+        'image' => $imageUrl,
+    ]);
+
+    return response()->json([
+        'message' => 'Account created successfully. Waiting for admin approval.',
+        'image_url' => $imageUrl
+    ]);
+}
 
 
     public function login(Request $request)
