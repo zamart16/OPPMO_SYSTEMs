@@ -25,7 +25,7 @@
                border border-gray-300
                rounded-lg px-3 py-2 text-sm pr-8">
                 <option value="">All Status</option>
-                <option value="For Head Review">For Head Review</option>
+                <option value="For Office Head Review">For Office Head Review</option>
                 <option value="PENDING">PENDING</option>
               </select>
 
