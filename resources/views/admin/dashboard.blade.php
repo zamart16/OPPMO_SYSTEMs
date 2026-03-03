@@ -3,16 +3,7 @@
 
 @include('layout.header')
 
-<script>
-    window.addEventListener("pageshow", function (event) {
-        const historyTraversal = event.persisted || 
-            (typeof performance !== "undefined" && performance.getEntriesByType("navigation")[0]?.type === "back_forward");
-
-        if (historyTraversal) {
-            window.location.reload();
-        }
-    });
-</script>
+@include('layout.reloading')
     
 <body class="bg-gray-50 min-h-screen">
 @include('layout.style')
