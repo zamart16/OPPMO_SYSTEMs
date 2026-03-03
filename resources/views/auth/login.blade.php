@@ -500,7 +500,7 @@ form.addEventListener('submit', async function(e){
       Swal.fire({
         icon: 'info',
         title: 'Attention!',
-        text: 'For this input, please input the full department name. Example: "Provincial Procurement Office"',
+        text: 'For this input, please input the full department name. Example: "Provincial Procurement Management Office"',
         confirmButtonText: 'Got it'
       });
       departmentAlertShown = true; // Set flag so it won’t show again
