@@ -150,27 +150,41 @@ public function list()
         $result = $evaluations->map(function ($eval) {
 
             $criteriaScores = [
-                1 => 0,
-                2 => 0,
-                3 => 0,
-                4 => 0,
+                1 => null,
+                2 => null,
+                3 => null,
+                4 => null,
             ];
 
             foreach ($eval->criteriaScores as $score) {
-                $criteriaScores[$score->criteria_id] = $score->number_rating ?? 0;
+                $criteriaScores[$score->criteria_id] = $score->number_rating;
             }
 
-            // Weighted total
-            $poScore = (5 * $criteriaScores[1]) +
-                       (7.5 * $criteriaScores[2]) +
-                       (6.25 * $criteriaScores[3]) +
-                       (6.25 * $criteriaScores[4]);
+            // Check if any criteria is incomplete
+            $hasIncomplete = in_array(null, $criteriaScores, true);
+
+            // Weighted total (keep your logic)
+            $poScore = 0;
+            if (!$hasIncomplete) {
+                $poScore =
+                    (5 * $criteriaScores[1]) +
+                    (7.5 * $criteriaScores[2]) +
+                    (6.25 * $criteriaScores[3]) +
+                    (6.25 * $criteriaScores[4]);
+            }
 
             // Head approval check
             $headApproval = $eval->digitalApprovals
                 ->firstWhere('role', 'Head');
 
-            $status = !$headApproval ? 'For HEAD REVIEW' : ($poScore >= 60 ? 'Approved' : 'Fail!');
+            // ✅ UPDATED STATUS LOGIC (Head-based)
+            if ($hasIncomplete) {
+                $status = 'PENDING';
+            } elseif ($headApproval) {
+                $status = 'Approved';
+            } else {
+                $status = 'For Office Head Review';
+            }
 
             // Evaluator (Prepared By)
             $evaluator = $eval->digitalApprovals
@@ -180,9 +194,9 @@ public function list()
                 'id' => $eval->id,
                 'supplier_name' => $eval->supplier_name ?? 'N/A',
                 'po_no' => $eval->po_no ?? 'N/A',
-                'date_evaluation' => $eval->date_evaluation ?? 'N/A',
+                'date_evaluation' => $eval->date_evaluation ?? null,
                 'department' => $eval->office_name ?? 'N/A',
-                'eval_score' => round($poScore, 2),
+                'eval_score' => !$hasIncomplete ? round($poScore, 2) : null,
                 'status' => $status,
                 'evaluator' => $evaluator ? $evaluator->full_name : 'N/A',
                 'criteria_scores' => $eval->criteriaScores,
