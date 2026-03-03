@@ -186,9 +186,13 @@ function renderTable(data) {
                 <td class="px-6 py-4">${evaluation.date_evaluation || 'PENDING'}</td>
                 <td class="px-6 py-4">${expandableCell(evaluator)}</td>
                 <td class="px-6 py-4">${expandableCell(evaluation.department)}</td>
-                <td class="px-6 py-4 font-semibold ${scoreClass}">
-                    <strong>${hasIncomplete ? 'PENDING' : `${weightedScore}%`}</strong>
-                </td>
+<td class="px-6 py-4 font-semibold ${hasIncomplete 
+    ? '' 
+    : weightedScore >= 60 
+        ? 'bg-green-100 text-green-800 rounded' 
+        : 'bg-red-100 text-red-800 rounded'}">
+    <strong>${hasIncomplete ? 'PENDING' : `${weightedScore}%`}</strong>
+</td>
                 <td class="px-6 py-4">
                     <span class="px-2 py-1 text-xs rounded ${statusClass}">
                         ${status}
