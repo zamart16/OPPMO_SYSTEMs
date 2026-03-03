@@ -221,7 +221,7 @@ function filterTable() {
 }
 
     searchInput.addEventListener('input', filterTable);
-    statusFilter.addEventListener('input', filterTable);
+    statusFilter.addEventListener('change', filterTable);
     departmentFilter.addEventListener('change', filterTable);
     startDateFilter.addEventListener('change', filterTable);
     endDateFilter.addEventListener('change', filterTable);
