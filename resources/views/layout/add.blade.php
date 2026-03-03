@@ -111,7 +111,7 @@
   @endif
 </div>
 
-                <div class="border-2 border-gray-300 rounded-xl mb-8 shadow-sm overflow-x-auto mb-8">
+                <div class="hidden border-2 border-gray-300 rounded-xl mb-8 shadow-sm overflow-x-auto mb-8">
                   <table class="w-full text-sm min-w-[600px]">
                     <thead>
                       <tr class="bg-gradient-to-r from-gray-800 to-gray-700 border-b border-gray-400">
@@ -240,7 +240,7 @@
 
                   </table>
                 </div>
-                <div class="bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-4 text-white mb-6">
+                <div class="hidden bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-4 text-white mb-6">
                     <div class="text-center">
                       <h4 class="text-lg font-bold mb-4">OVERALL RATING CALCULATION</h4>
                       <div class="bg-white bg-opacity-20 rounded-lg p-4 mb-4">
@@ -269,7 +269,7 @@
           </div>
         </div>
         <!-- Digital Authorization Section -->
-        <div class="bg-gray-50 rounded-xl p-6 border-2 border-gray-200">
+        <div class="hidden bg-gray-50 rounded-xl p-6 border-2 border-gray-200">
           <h4 class="text-lg font-bold text-gray-800 mb-6 pb-3 border-b border-gray-300">
             Digital Authorization
           </h4>
