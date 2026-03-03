@@ -15,10 +15,10 @@
           </button>
         </div>
       </div>
-      <div class="hidden p-4 sm:p-6 md:p-8">
+      <div class="p-4 sm:p-6 md:p-8">
         <div class="mb-8">
         </div>
-        <div class="mb-8">
+        <div class="hidden mb-8">
           <div class="bg-blue-50 rounded-xl p-6 border-l-4 border-primary">
             <h4 class="text-base font-bold text-primary mb-3 flex items-center">
               <div class="w-5 h-5 flex items-center justify-center mr-2">
@@ -109,6 +109,11 @@
            value="{{ auth()->user()->department ?? '' }}"
            readonly>
   @endif
+
+                  <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4 mt-6">
+            <button id="cancelNewEvaluationModalBtn" class="border border-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-50">Cancel</button>
+            <button id="submitNewEvaluationBtn" class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-600">Submit Evaluation</button>
+          </div>
 </div>
 
                 <div class="hidden border-2 border-gray-300 rounded-xl mb-8 shadow-sm overflow-x-auto mb-8">
@@ -314,10 +319,7 @@
         </div>
 
       </div>
-                  <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4 mt-6">
-            <button id="cancelNewEvaluationModalBtn" class="border border-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-50">Cancel</button>
-            <button id="submitNewEvaluationBtn" class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-600">Submit Evaluation</button>
-          </div>
+
     </div>
   </div>
 </div>
