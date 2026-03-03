@@ -160,37 +160,65 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // --- Combined Filtering ---
-    function filterTable() {
-        const searchText = searchInput.value.toLowerCase();
-        const searchStatus = statusFilter.value.toLowerCase();
-        const department = departmentFilter.value;
-        const startDate = startDateFilter.value;
-        const endDate = endDateFilter.value;
+// --- Combined Filtering ---
+function filterTable() {
+    const searchText = searchInput.value.toLowerCase();
+    const searchStatus = statusFilter.value.toLowerCase();
+    const department = departmentFilter.value;
+    const startDate = startDateFilter.value;
+    const endDate = endDateFilter.value;
 
-        filteredData = evaluationsData.filter(e => {
-            const combinedText = `
-                ${e.supplier_name ?? ''}
-                ${e.po_no ?? ''}
-                ${e.date_evaluation ?? ''}
-                ${e.digital_approvals?.[0]?.full_name ?? ''}
-                ${e.office_name ?? ''}
-                ${e.status ?? ''}
-                ${calculateWeightedScore(e.criteria_scores) ?? ''}
-            `.toLowerCase();
+    filteredData = evaluationsData.filter(e => {
 
-            const matchesText = combinedText.includes(searchText);
-            const matchesStatus = combinedText.includes(searchStatus);
-            const matchesDepartment = !department || e.office_name === department;
+        // 🔹 Recompute status (SAME logic as renderTable — nothing removed)
+        const weightedScore = calculateWeightedScore(e.criteria_scores) ?? '';
+        const hasIncomplete = weightedScore === '';
+        const evaluator = e.digital_approvals?.[0]?.full_name ?? null;
 
-            const evalDate = e.date_evaluation ? new Date(e.date_evaluation) : null;
-            const afterStart = !startDate || (evalDate && evalDate >= new Date(startDate));
-            const beforeEnd = !endDate || (evalDate && evalDate <= new Date(endDate));
+        let computedStatus = 'pending';
+        if (!hasIncomplete && evaluator) {
+            if (weightedScore >= 60) {
+                computedStatus = 'approved';
+            } else {
+                computedStatus = 'fail / for office head review';
+            }
+        }
 
-            return matchesText && matchesDepartment && afterStart && beforeEnd;
-        });
+        // 🔹 Original combined text logic (unchanged)
+        const combinedText = `
+            ${e.supplier_name ?? ''}
+            ${e.po_no ?? ''}
+            ${e.date_evaluation ?? ''}
+            ${e.digital_approvals?.[0]?.full_name ?? ''}
+            ${e.office_name ?? ''}
+            ${weightedScore ?? ''}
+        `.toLowerCase();
 
-        renderTable(filteredData);
-    }
+        const matchesText = combinedText.includes(searchText);
+
+        // 🔹 FIXED status filter (now uses computedStatus)
+        const matchesStatus =
+            !searchStatus || computedStatus.includes(searchStatus);
+
+        const matchesDepartment =
+            !department || e.office_name === department;
+
+        const evalDate = e.date_evaluation ? new Date(e.date_evaluation) : null;
+        const afterStart =
+            !startDate || (evalDate && evalDate >= new Date(startDate));
+        const beforeEnd =
+            !endDate || (evalDate && evalDate <= new Date(endDate));
+
+        // 🔹 Only change: added matchesStatus
+        return matchesText &&
+               matchesStatus &&
+               matchesDepartment &&
+               afterStart &&
+               beforeEnd;
+    });
+
+    renderTable(filteredData);
+}
 
     searchInput.addEventListener('input', filterTable);
     statusFilter.addEventListener('input', filterTable);
