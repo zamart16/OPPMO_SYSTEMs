@@ -724,7 +724,82 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 
+<script>
+document.getElementById('submitUpdateEvaluationBtn').addEventListener('click', async function() {
+    const token = window.location.pathname.split('/').pop();
 
+    // --- Collect main fields ---
+    const payload = {
+        supplier_name: document.getElementById('update_supplier_name')?.value || '',
+        po_no: document.getElementById('update_po_no')?.value || '',
+        date_evaluation: document.getElementById('update_date_evaluation')?.value || '',
+        covered_period: document.getElementById('update_covered_period')?.value || '',
+        office_name: document.getElementById('update_office_name')?.value || '',
+        criteria: {},
+        evaluator: {}
+    };
+
+    // --- Collect criteria scores and remarks ---
+    ['price_1','quality_1','customercare_1','delivery_1'].forEach(name => {
+        const selected = document.querySelector(`input[name="${name}"]:checked`);
+        const remarks = document.getElementById(`update_form_remarks_${name}`)?.value || '';
+        if (selected) {
+            payload.criteria[name] = {
+                value: parseFloat(selected.value),
+                remarks: remarks
+            };
+        }
+    });
+
+    // --- Collect evaluator info (Head) ---
+    const evaluatorName = document.getElementById('head_full_name')?.value || '';
+    const evaluatorDesignation = document.getElementById('head_designation')?.value || '';
+    const evaluatorImage = document.getElementById('head_evaluatorImage')?.src || '';
+    if (evaluatorName && evaluatorDesignation && evaluatorImage) {
+        payload.evaluator = {
+            full_name: evaluatorName,
+            designation: evaluatorDesignation,
+            image: evaluatorImage
+        };
+    }
+
+    // --- Confirm submission ---
+    if (!confirm("Are you sure you want to submit this evaluation?")) return;
+
+    try {
+        const res = await fetch(`/evaluation/update/${token}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+            alert(data.message);
+
+            // --- Disable all inputs, selects, textareas, and submit button ---
+            document.querySelectorAll('input, select, textarea').forEach(el => el.disabled = true);
+            document.getElementById('submitUpdateEvaluationBtn').disabled = true;
+
+            // Optional: reload page after short delay
+            // setTimeout(() => window.location.reload(), 1000);
+        } else {
+            alert('Failed to submit evaluation: ' + data.message);
+        }
+    } catch (err) {
+        console.error(err);
+        alert('Error submitting evaluation.');
+    }
+});
+</script>
+
+
+    
+<!-- 
 <script>
 document.getElementById('submitUpdateEvaluationBtn').addEventListener('click', async function() {
     const token = window.location.pathname.split('/').pop();
@@ -790,6 +865,6 @@ document.getElementById('submitUpdateEvaluationBtn').addEventListener('click', a
         alert('Error submitting evaluation.');
     }
 });
-</script>
+</script> -->
 
 </body>
