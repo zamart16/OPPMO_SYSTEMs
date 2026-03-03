@@ -366,16 +366,25 @@ function renderTable(data) {
 //         }
 //     });
 
-    tableBody.addEventListener('change', async function(e) {
+  tableBody.addEventListener('change', async function(e) {
     if (!e.target.classList.contains('evaluationAction')) return;
 
     const evaluationId = e.target.dataset.id;
     const action = e.target.value;
     if (!evaluationId) return;
 
-    Swal.fire({ title: 'Processing...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+    Swal.fire({ 
+        title: 'Processing...', 
+        allowOutsideClick: false, 
+        didOpen: () => Swal.showLoading() 
+    });
 
     try {
+        // Get the full evaluation object from filteredData
+        const evaluation = filteredData.find(ev => ev.id == evaluationId);
+
+        if (!evaluation) throw new Error('Evaluation not found');
+
         if (action === 'review') {
             await viewEvaluation(evaluationId);
         } else if (action === 'edit') {
@@ -400,9 +409,13 @@ function renderTable(data) {
             // -----------------------
             // Copy Head Review Link
             // -----------------------
-            // Build absolute URL
-            const origin = window.location.origin;
-            const reviewUrl = `${origin}/evaluation/head-review/${evaluationId}`;
+            if (!evaluation.head_review_token) {
+                Swal.fire('Error!', 'No active Head review link available.', 'error');
+                return;
+            }
+
+            const origin = window.location.origin; // e.g., https://oppmosystems-production.up.railway.app
+            const reviewUrl = `${origin}/evaluation/head-review/${evaluation.head_review_token}`;
 
             Swal.fire({
                 icon: 'info',
@@ -432,7 +445,7 @@ function renderTable(data) {
         Swal.close();
         e.target.value = ''; // Reset select
     }
-});
+});;
 
 
     // --- Track Selection ---
