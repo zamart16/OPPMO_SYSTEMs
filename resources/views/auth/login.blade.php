@@ -456,7 +456,6 @@ retakeBtn.addEventListener('click', () => {
 document.addEventListener('DOMContentLoaded', function () {
 
     const registerForm = document.querySelector('#registerForm');
-
     if (!registerForm) return;
 
     registerForm.addEventListener('submit', async (e) => {
@@ -468,12 +467,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const email = registerForm.querySelector('input[type="email"]').value.trim();
         const password = registerForm.querySelector('input[name="password"]').value.trim();
         const password_confirmation = registerForm.querySelector('input[name="password_confirmation"]').value.trim();
+        const image = document.getElementById('capturedImage')?.value.trim();
 
-        if (!name || !department || !role || !email || !password || !password_confirmation) {
+        // 🔥 Check all required fields INCLUDING image
+        if (!name || !department || !role || !email || !password || !password_confirmation || !image) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Missing Fields',
-                text: 'Please fill in all required fields.'
+                text: 'Please complete all fields and capture your profile image.'
             });
             return;
         }
@@ -494,7 +495,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 email,
                 password,
                 password_confirmation,
-                image: null // add base64 image here if needed
+                image: image // ✅ send base64 image
             });
 
             Swal.close();
@@ -514,14 +515,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             let message = 'Something went wrong. Please try again.';
 
-            if (error.response) {
-
-                if (error.response.status === 422) {
-                    message = error.response.data.message;
-                }
-                else if (error.response.data.message) {
-                    message = error.response.data.message;
-                }
+            if (error.response?.data?.message) {
+                message = error.response.data.message;
             }
 
             Swal.fire({
@@ -531,6 +526,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
     });
+
 });
 </script>
 
