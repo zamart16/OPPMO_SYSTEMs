@@ -95,25 +95,45 @@
 </head>
 <body>
 
-    <!-- Government Header -->
-    <div class="header">
-        <table>
-            <tr>
-                <td style="width: 20%;">
-                    <img src="{{ public_path('logo.png') }}" class="logo">
-                </td>
-                <td class="gov-title">
-                    <!-- <h2>Government of [Country Name]</h2>
-                    <h3>Ministry of Procurement & Supply Chain</h3>
-                    <h3>Department of Vendor Management</h3> -->
-                </td>
-                <!-- <td style="width: 20%; text-align: right; font-size: 11px;">
-                    Ref No: ___________<br>
-                    Date: {{ date('d M Y') }}
-                </td> -->
-            </tr>
-        </table>
-    </div>
+<!-- Government Header -->
+<div class="header" style="border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
+    <table style="width: 100%; border: none;">
+        <tr>
+            <!-- Provincial Seal -->
+            <td style="width: 20%; text-align: center; border: none;">
+                <img src="{{ public_path('logo.png') }}" style="width: 95px;">
+            </td>
+
+            <!-- Government Title -->
+            <td style="width: 60%; text-align: center; border: none; line-height: 1.4;">
+                
+                <div style="font-size: 13px;">
+                    Republic of the Philippines
+                </div>
+
+                <div style="font-size: 16px; font-weight: bold; margin-top: 2px;">
+                    PROVINCE OF DAVAO DEL SUR
+                </div>
+
+                <div style="font-size: 13px;">
+                    Provincial Government
+                </div>
+
+                <div style="font-size: 13px;">
+                    Matti, City of Digos
+                </div>
+
+                <div style="margin-top: 8px; font-size: 14px; font-weight: bold; text-transform: uppercase;">
+                    OFFICE OF THE PROVINCIAL PROCUREMENT MANAGEMENT OFFICER
+                </div>
+
+            </td>
+
+            <!-- Optional Right Seal (leave blank or duplicate logo if needed) -->
+            <td style="width: 20%; border: none;"></td>
+        </tr>
+    </table>
+</div>
 
     <h1>Supplier Evaluation Summary Report</h1>
 
