@@ -100,17 +100,17 @@
         <table>
             <tr>
                 <td style="width: 20%;">
-                    <img src="{{ public_path('images/government-logo.png') }}" class="logo">
+                    <img src="{{ public_path('logo.png') }}" class="logo">
                 </td>
                 <td class="gov-title">
-                    <h2>Government of [Country Name]</h2>
+                    <!-- <h2>Government of [Country Name]</h2>
                     <h3>Ministry of Procurement & Supply Chain</h3>
-                    <h3>Department of Vendor Management</h3>
+                    <h3>Department of Vendor Management</h3> -->
                 </td>
-                <td style="width: 20%; text-align: right; font-size: 11px;">
+                <!-- <td style="width: 20%; text-align: right; font-size: 11px;">
                     Ref No: ___________<br>
                     Date: {{ date('d M Y') }}
-                </td>
+                </td> -->
             </tr>
         </table>
     </div>
