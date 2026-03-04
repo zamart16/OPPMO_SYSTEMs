@@ -211,7 +211,7 @@
 
     </div>
 
-    <div style="text-align: center; margin-top: 16px; font-size: 11px; color: #555;">
+    <div style="text-align: center; margin-top: 16px; font-size: 11px; color: #555; font-style: italic;">
         This is a system-generated document authenticated through computer-generated facial recognition technology and is valid without a handwritten signature.
     </div>
 </div>
