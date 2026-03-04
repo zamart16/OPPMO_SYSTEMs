@@ -173,7 +173,7 @@ function renderTable(data) {
 
         // --- Conditional Delete Option ---
         const deleteOption = currentUserRole !== 'end_user'
-            ? `<option value="delete">Delete</option>`
+            ? `<option value="delete" class="hidden">Delete</option>`
             : '';
 
         // --- Table Row with Expandable Cells ---
