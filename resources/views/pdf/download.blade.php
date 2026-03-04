@@ -38,14 +38,14 @@
 </div>
 
     <!-- Instructions -->
-    <div class="section">
+    <!-- <div class="section">
         <div class="section-title">INSTRUCTIONS</div>
         <ol style="padding-left: 20px; margin-top: 5px;">
             <li>Check the box which corresponds to the supplier's performance based on the Purchase Order/Contract listed above.</li>
             <li>In the Remarks / Specific Comments Column, provide details of any incidents or deviations. Use additional sheet if necessary.</li>
             <li>When multiple POs are added, each evaluation is calculated separately for the overall rating.</li>
         </ol>
-    </div>
+    </div> -->
 
     <!-- Evaluation Details -->
     <div class="section">
