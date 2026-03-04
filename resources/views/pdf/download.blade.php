@@ -146,24 +146,23 @@
 
     <!-- Overall Rating -->
     <div class="section">
-        <div class="section-title">Overall Rating</div>
         @php
             $status = $overallScore >= 60 ? 'Passed' : 'Failed';
         @endphp
         <div class="rating-box">
             <strong>{{ number_format($overallScore,2) }}%</strong> - {{ $status }}
         </div>
-        <div style="display:flex; justify-content: space-around; margin-top:10px;">
+        <!-- <div style="display:flex; justify-content: space-around; margin-top:10px;">
             <div style="text-align:center;">
                 <div>Passing Rate</div>
                 <div>60%</div>
             </div>
-        </div>
+        </div> -->
     </div>
 
 <!-- Digital Authorization -->
 <div class="section">
-    <div class="section-title">Digital Authorization</div>
+    <!-- <div class="section-title">Digital Authorization</div> -->
 
     <div style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between;">
 
