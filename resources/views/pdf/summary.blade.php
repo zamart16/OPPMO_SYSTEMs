@@ -197,7 +197,7 @@
             This Supplier Evaluation is authenticated and authorized through computer-generated facial recognition technology, which serves as an official signature in lieu of a handwritten signature.
         </div>
         <br>
-        © {{ date('Y') }} Government of [Country Name]. All Rights Reserved.
+        <!-- © {{ date('Y') }} Government of [Country Name]. All Rights Reserved. -->
     </div>
 
 </body>
