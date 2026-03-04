@@ -26,9 +26,9 @@
 <!-- Header -->
 <div class="section" style="display: flex; align-items: center; justify-content: center; gap: 16px; text-align: center;">
     <!-- Logo -->
-    <img src="{{ public_path('logo.png') }}"
+    <!-- <img src="{{ public_path('logo.png') }}"
          alt="Company Logo"
-         style="height: 70px; width: auto; object-fit: contain;">
+         style="height: 70px; width: auto; object-fit: contain;"> -->
 
     <!-- Title -->
     <div>
