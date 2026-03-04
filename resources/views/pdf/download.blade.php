@@ -72,7 +72,6 @@
 
     <!-- Evaluation Criteria Table -->
     <div class="section">
-        <div class="section-title">Evaluation Criteria</div>
         <table class="table">
             <thead>
                 <tr>
@@ -180,7 +179,7 @@
                     Already submitted by End User
                 </div>
                 @if(!empty($evaluation->digitalApprovals->where('role','Prepared By')->first()->image))
-                    <img src="{{ public_path('storage/' . $evaluation->digitalApprovals->where('role','Prepared By')->first()->image) }}"
+                    <img hidden src="{{ public_path('storage/' . $evaluation->digitalApprovals->where('role','Prepared By')->first()->image) }}"
                          alt="End User Signature"
                          style="width: 100px; height: 100px; object-fit: cover; border: 1px solid #ccc; border-radius: 8px;">
                 @endif
@@ -201,7 +200,7 @@
                     Already submitted by Office Head
                 </div>
                 @if(!empty($evaluation->digitalApprovals->where('role','Head')->first()->image))
-                    <img src="{{ public_path('storage/' . $evaluation->digitalApprovals->where('role','Head')->first()->image) }}"
+                    <img hidden src="{{ public_path('storage/' . $evaluation->digitalApprovals->where('role','Head')->first()->image) }}"
                          alt="Head Signature"
                          style="width: 100px; height: 100px; object-fit: cover; border: 1px solid #ccc; border-radius: 8px;">
                 @endif
