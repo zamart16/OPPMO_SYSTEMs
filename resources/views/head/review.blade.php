@@ -3,57 +3,40 @@
 <script>
 (function () {
 
-    let triggered = false;
+    let alertShown = false;
 
-    function blockAccess(message = "Developer tools are not allowed on this page.") {
+    function showWarning(message) {
 
-        if (triggered) return;
-        triggered = true;
+        if (alertShown) return;
+        alertShown = true;
 
         Swal.fire({
             icon: "warning",
-            title: "Access Blocked",
+            title: "Action Blocked",
             text: message,
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-            confirmButtonText: "OK"
+            confirmButtonText: "OK",
+            showCloseButton: true,
+            allowOutsideClick: true
         }).then(() => {
-
-            // Redirect or reload
-            window.location.href = "/devtools-warning";
-            // location.reload();
-
+            alertShown = false;
         });
+
     }
 
     /* DEVTOOLS SIZE DETECTION */
     function detectDevTools() {
 
         const threshold = 160;
+        const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+        const heightThreshold = window.outerHeight - window.innerHeight > threshold;
 
-        if (
-            window.outerWidth - window.innerWidth > threshold ||
-            window.outerHeight - window.innerHeight > threshold
-        ) {
-            blockAccess();
+        if (widthThreshold || heightThreshold) {
+            showWarning("Developer tools are not allowed on this page.");
         }
 
     }
 
     setInterval(detectDevTools, 800);
-
-    /* CONSOLE DETECTION TRICK */
-    const element = new Image();
-
-    Object.defineProperty(element, 'id', {
-        get: function () {
-            blockAccess();
-        }
-    });
-
-    setInterval(function () {
-        console.log(element);
-    }, 1000);
 
 })();
 
@@ -67,11 +50,7 @@ document.addEventListener("contextmenu", function (e) {
         title: "Action Blocked",
         text: "Right click is not allowed on this page.",
         confirmButtonText: "OK",
-        allowOutsideClick: false
-    }).then(() => {
-
-        window.location.href = "/devtools-warning";
-
+        showCloseButton: true
     });
 });
 
@@ -80,15 +59,10 @@ document.addEventListener("contextmenu", function (e) {
 document.addEventListener("keydown", function (e) {
 
     if (
-
         e.key === "F12" ||
-
         (e.ctrlKey && e.shiftKey && ["I","J","C"].includes(e.key)) ||
-
         (e.ctrlKey && e.key === "U") ||
-
         (e.metaKey && e.altKey && e.key === "I")
-
     ) {
 
         e.preventDefault();
@@ -98,15 +72,10 @@ document.addEventListener("keydown", function (e) {
             title: "Action Blocked",
             text: "Opening Developer Tools is not allowed.",
             confirmButtonText: "OK",
-            allowOutsideClick: false
-        }).then(() => {
-
-            window.location.href = "/devtools-warning";
-
+            showCloseButton: true
         });
 
         return false;
-
     }
 
 });
