@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Supplier Evaluation - {{ $evaluation->id ?? '' }}</title>
     <style>
+        /* General Body */
         body { 
             font-family: "Segoe UI", Arial, sans-serif; 
             font-size: 12px; 
@@ -16,12 +17,30 @@
 
         h1, h2, h3, h4 { margin: 0; }
 
-        h1 { 
+        /* Header */
+        .header { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 16px; 
+            text-align: center; 
+            margin-bottom: 24px;
+        }
+
+        .header h1 { 
             font-size: 18px; 
             font-weight: 700; 
             color: #1e40af; 
+            margin-bottom: 4px; 
         }
 
+        .header p { 
+            font-size: 12px; 
+            color: #475569; 
+            margin: 0; 
+        }
+
+        /* Sections */
         .section { 
             margin-bottom: 24px; 
         }
@@ -35,6 +54,7 @@
             color: #1e40af; 
         }
 
+        /* Tables */
         .table { 
             width: 100%; 
             border-collapse: collapse; 
@@ -54,10 +74,17 @@
             font-weight: 600; 
         }
 
+        td em { 
+            color: #374151; 
+            font-style: normal; 
+            font-size: 11px; 
+        }
+
         .remarks { 
             min-height: 50px; 
         }
 
+        /* Overall Rating */
         .rating-box { 
             background-color: #dbeafe; 
             padding: 12px; 
@@ -100,6 +127,7 @@
             display: flex; 
             flex-direction: column; 
             gap: 12px; 
+            white-space: nowrap;
         }
 
         .auth-panel img { 
@@ -109,26 +137,6 @@
             object-fit: cover; 
             border: 1px solid #cbd5e1; 
             border-radius: 8px;
-        }
-
-        /* Header */
-        .header { 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 16px; 
-            text-align: center; 
-            margin-bottom: 24px;
-        }
-
-        .header h1 { 
-            margin-bottom: 4px; 
-        }
-
-        .header p { 
-            margin: 0; 
-            font-size: 12px; 
-            color: #475569;
         }
 
         /* Footer note */
@@ -141,132 +149,127 @@
             line-height: 1.4; 
             max-width: 500px; 
         }
-
-        /* Table Emphasis */
-        td em { 
-            color: #374151; 
-            font-style: normal; 
-            font-size: 11px; 
-        }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
-    <div class="header">
-        <!-- Logo -->
-        <!-- <img src="{{ public_path('logo.png') }}" alt="Company Logo" style="height:70px; object-fit:contain;"> -->
-        <div>
-            <h1>SUPPLIER'S EVALUATION FORM</h1>
-            <p>Performance Assessment & Rating System</p>
-        </div>
-    </div>
+<!-- Header -->
+<div class="header">
+    <!-- Logo Placeholder -->
+    <!-- <img src="{{ public_path('logo.png') }}" alt="Company Logo" style="height:70px; object-fit:contain;"> -->
 
-    <!-- Evaluation Details -->
-    <div class="section">
-        <div class="section-title">Evaluation Details</div>
-        <table class="table">
-            <tr>
-                <th>NAME OF SUPPLIER</th>
-                <td>{{ $evaluation->supplier_name ?? '' }}</td>
-                <th>Purchase Order / Contract No.</th>
-                <td>{{ $evaluation->po_no ?? '' }}</td>
-            </tr>
-            <tr>
-                <th>Date of Evaluation</th>
-                <td>{{ $evaluation->date_evaluation ?? '' }}</td>
-                <th>Covered Period</th>
-                <td>{{ $evaluation->covered_period ?? '' }}</td>
-            </tr>
-            <tr>
-                <th>Evaluated by (Office Name)</th>
-                <td colspan="3">{{ $evaluation->office_name ?? '' }}</td>
-            </tr>
-        </table>
+    <div>
+        <h1>SUPPLIER'S EVALUATION FORM</h1>
+        <p>Performance Assessment & Rating System</p>
     </div>
+</div>
 
-    <!-- Evaluation Criteria Table -->
-    <div class="section">
-        <table class="table">
-            <thead>
+<!-- Evaluation Details -->
+<div class="section">
+    <div class="section-title">Evaluation Details</div>
+    <table class="table">
+        <tr>
+            <th>NAME OF SUPPLIER</th>
+            <td>{{ $evaluation->supplier_name ?? '' }}</td>
+            <th>Purchase Order / Contract No.</th>
+            <td>{{ $evaluation->po_no ?? '' }}</td>
+        </tr>
+        <tr>
+            <th>Date of Evaluation</th>
+            <td>{{ $evaluation->date_evaluation ?? '' }}</td>
+            <th>Covered Period</th>
+            <td>{{ $evaluation->covered_period ?? '' }}</td>
+        </tr>
+        <tr>
+            <th>Evaluated by (Office Name)</th>
+            <td colspan="3">{{ $evaluation->office_name ?? '' }}</td>
+        </tr>
+    </table>
+</div>
+
+<!-- Evaluation Criteria Table -->
+<div class="section">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>EVALUATION CRITERIA</th>
+                <th>REMARKS / SPECIFIC COMMENTS</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php $overallScore = 0; @endphp
+            @foreach($evaluation->criteriaScores as $score)
+                @php
+                    $criteriaId = $score->criteria_id;
+                    $rating = $score->number_rating ?? 0;
+                    $weighted = $criteriaWeightMap[$criteriaId][$rating] ?? 0;
+                    $overallScore += $weighted;
+                    $criteriaName = $score->criteria->criteria_name ?? 'N/A';
+                    $description = $ratingDescriptions[$rating][$criteriaId] ?? '';
+                @endphp
                 <tr>
-                    <th>EVALUATION CRITERIA</th>
-                    <th>REMARKS / SPECIFIC COMMENTS</th>
+                    <td>
+                        <strong>{{ $criteriaName }}</strong>
+                        ({{ max($criteriaWeightMap[$criteriaId]) }}%)
+                        <br>
+                        <strong>Rate:&nbsp;&nbsp;{{ number_format($weighted, 2) }}%</strong>
+                        <br>
+                        <em>{{ $description }}</em>
+                    </td>
+                    <td class="remarks">{{ $score->remarks ?? '' }}</td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach($evaluation->criteriaScores as $score)
-                    @php
-                        $criteriaId = $score->criteria_id;
-                        $rating = $score->number_rating ?? 0;
-                        $weighted = $criteriaWeightMap[$criteriaId][$rating] ?? 0;
-                        $overallScore += $weighted;
-                        $criteriaName = $score->criteria->criteria_name ?? 'N/A';
-                        $description = $ratingDescriptions[$rating][$criteriaId] ?? '';
-                    @endphp
-                    <tr>
-                        <td>
-                            <strong>{{ $criteriaName }}</strong>
-                            ({{ max($criteriaWeightMap[$criteriaId]) }}%)
-                            <br>
-                            <strong>Rate:&nbsp;&nbsp;{{ number_format($weighted, 2) }}%</strong>
-                            <br>
-                            <em>{{ $description }}</em>
-                        </td>
-                        <td class="remarks">{{ $score->remarks ?? '' }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
+            @endforeach
+        </tbody>
+    </table>
+</div>
 
-    <!-- Overall Rating -->
-    <div class="section">
-        @php
-            $status = $overallScore >= 60 ? 'Passed' : 'Failed';
-        @endphp
-        <div class="rating-box">
-            <strong>{{ number_format($overallScore,2) }}%</strong> - {{ $status }}
-        </div>
+<!-- Overall Rating -->
+<div class="section">
+    @php $status = $overallScore >= 60 ? 'Passed' : 'Failed'; @endphp
+    <div class="rating-box">
+        <strong>{{ number_format($overallScore,2) }}%</strong> - {{ $status }}
     </div>
+</div>
 
-    <!-- Digital Authorization -->
-    <div class="section auth-container">
-        <!-- End User -->
-        <div class="auth-panel">
-            <h4>End User</h4>
+<!-- Digital Authorization -->
+<div class="section auth-container">
+
+    <!-- End User Panel -->
+    <div class="auth-panel">
+        <h4>End User</h4>
+        <div>
             <div>
-                <div>
-                    <strong>Prepared by:</strong> {{ $evaluation->digitalApprovals->where('role','Prepared By')->first()->full_name ?? '-' }}<br>
-                    <strong>Designation:</strong> {{ $evaluation->digitalApprovals->where('role','Prepared By')->first()->designation ?? '-' }}
-                </div>
-                <div style="font-size:11px; color:#475569;">Already submitted by End User</div>
-                @if(!empty($evaluation->digitalApprovals->where('role','Prepared By')->first()->image))
-                    <img hidden src="{{ public_path('storage/' . $evaluation->digitalApprovals->where('role','Prepared By')->first()->image) }}" alt="End User Signature">
-                @endif
+                <strong>Prepared by:</strong> {{ $evaluation->digitalApprovals->where('role','Prepared By')->first()->full_name ?? '-' }}<br>
+                <strong>Designation:</strong> {{ $evaluation->digitalApprovals->where('role','Prepared By')->first()->designation ?? '-' }}
             </div>
+            <div style="font-size:11px; color:#475569;">Already submitted by End User</div>
+            @if(!empty($evaluation->digitalApprovals->where('role','Prepared By')->first()->image))
+                <img hidden src="{{ public_path('storage/' . $evaluation->digitalApprovals->where('role','Prepared By')->first()->image) }}" alt="End User Signature">
+            @endif
         </div>
+    </div>
 
-        <!-- Head Authorization -->
-        <div class="auth-panel">
-            <h4>Head Authorization</h4>
+    <!-- Head Authorization Panel -->
+    <div class="auth-panel">
+        <h4>Head Authorization</h4>
+        <div>
             <div>
-                <div>
-                    <strong>Prepared by:</strong> {{ $evaluation->digitalApprovals->where('role','Head')->first()->full_name ?? '-' }}<br>
-                    <strong>Designation:</strong> {{ $evaluation->digitalApprovals->where('role','Head')->first()->designation ?? '-' }}
-                </div>
-                <div style="font-size:11px; color:#475569;">Already submitted by Office Head</div>
-                @if(!empty($evaluation->digitalApprovals->where('role','Head')->first()->image))
-                    <img hidden src="{{ public_path('storage/' . $evaluation->digitalApprovals->where('role','Head')->first()->image) }}" alt="Head Signature">
-                @endif
+                <strong>Prepared by:</strong> {{ $evaluation->digitalApprovals->where('role','Head')->first()->full_name ?? '-' }}<br>
+                <strong>Designation:</strong> {{ $evaluation->digitalApprovals->where('role','Head')->first()->designation ?? '-' }}
             </div>
+            <div style="font-size:11px; color:#475569;">Already submitted by Office Head</div>
+            @if(!empty($evaluation->digitalApprovals->where('role','Head')->first()->image))
+                <img hidden src="{{ public_path('storage/' . $evaluation->digitalApprovals->where('role','Head')->first()->image) }}" alt="Head Signature">
+            @endif
         </div>
     </div>
 
-    <!-- Footer Note -->
-    <div class="footer-note">
-        This is a system-generated document authenticated through computer-generated facial recognition technology and is valid without a handwritten signature.
-    </div>
+</div>
+
+<!-- Footer Note -->
+<div class="footer-note">
+    This is a system-generated document authenticated through computer-generated facial recognition technology and is valid without a handwritten signature.
+</div>
 
 </body>
 </html>
