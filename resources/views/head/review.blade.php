@@ -774,10 +774,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     Swal.showValidationMessage(error.message);
                 });
             }
-        }).then((result) => {
-            if (!result.isConfirmed) {
-                window.location.href = '/';
-            }
         });
     }
 
