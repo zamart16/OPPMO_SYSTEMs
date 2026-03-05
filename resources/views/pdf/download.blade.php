@@ -160,56 +160,55 @@
     </div>
 
 <!-- Digital Authorization -->
-<div class="section">
-    <!-- <div class="section-title">Digital Authorization</div> -->
+<div class="section" style="font-family: Arial, sans-serif; color: #333;">
 
-    <div style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between;">
+    <div style="display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between; margin-bottom: 16px;">
 
         <!-- End User Panel (Left) -->
-        <div style="flex: 1; min-width: 250px; background-color: #fff; border: 1px solid #ccc; border-radius: 12px; padding: 16px;">
-            <h4 style="font-size: 16px; font-weight: bold; margin-bottom: 12px; border-bottom: 1px solid #ccc; padding-bottom: 8px;">
+        <div style="flex: 1; min-width: 260px; background-color: #fdfdfd; border: 1px solid #ddd; border-radius: 12px; padding: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+            <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 14px; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #2c3e50;">
                 End User
             </h4>
-            <div>
-                <div style="font-size: 12px; margin-bottom: 8px;">
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="font-size: 13px; line-height: 1.5;">
                     <strong>Prepared by:</strong> {{ $evaluation->digitalApprovals->where('role','Prepared By')->first()->full_name ?? '-' }}<br>
                     <strong>Designation:</strong> {{ $evaluation->digitalApprovals->where('role','Prepared By')->first()->designation ?? '-' }}
                 </div>
-                <div style="font-size: 10px; color: #555; margin-bottom: 8px;">
+                <div style="font-size: 11px; color: #666;">
                     Already submitted by End User
                 </div>
                 @if(!empty($evaluation->digitalApprovals->where('role','Prepared By')->first()->image))
                     <img hidden src="{{ public_path('storage/' . $evaluation->digitalApprovals->where('role','Prepared By')->first()->image) }}"
                          alt="End User Signature"
-                         style="width: 100px; height: 100px; object-fit: cover; border: 1px solid #ccc; border-radius: 8px;">
+                         style="width: 100px; height: 100px; object-fit: cover; border: 1px solid #ccc; border-radius: 8px; margin-top: 8px;">
                 @endif
             </div>
         </div>
 
         <!-- Head Authorization Panel (Right) -->
-        <div style="flex: 1; min-width: 250px; background-color: #fff; border: 1px solid #ccc; border-radius: 12px; padding: 16px;">
-            <h4 style="font-size: 16px; font-weight: bold; margin-bottom: 12px; border-bottom: 1px solid #ccc; padding-bottom: 8px;">
+        <div style="flex: 1; min-width: 260px; background-color: #fdfdfd; border: 1px solid #ddd; border-radius: 12px; padding: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+            <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 14px; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #2c3e50;">
                 Head Authorization
             </h4>
-            <div>
-                <div style="font-size: 12px; margin-bottom: 8px;">
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="font-size: 13px; line-height: 1.5;">
                     <strong>Prepared by:</strong> {{ $evaluation->digitalApprovals->where('role','Head')->first()->full_name ?? '-' }}<br>
                     <strong>Designation:</strong> {{ $evaluation->digitalApprovals->where('role','Head')->first()->designation ?? '-' }}
                 </div>
-                <div style="font-size: 10px; color: #555; margin-bottom: 8px;">
+                <div style="font-size: 11px; color: #666;">
                     Already submitted by Office Head
                 </div>
                 @if(!empty($evaluation->digitalApprovals->where('role','Head')->first()->image))
                     <img hidden src="{{ public_path('storage/' . $evaluation->digitalApprovals->where('role','Head')->first()->image) }}"
                          alt="Head Signature"
-                         style="width: 100px; height: 100px; object-fit: cover; border: 1px solid #ccc; border-radius: 8px;">
+                         style="width: 100px; height: 100px; object-fit: cover; border: 1px solid #ccc; border-radius: 8px; margin-top: 8px;">
                 @endif
             </div>
         </div>
 
     </div>
 
-    <div style="text-align: center; margin-top: 16px; font-size: 11px; color: #555; font-style: italic;">
+    <div style="text-align: center; margin-top: 20px; font-size: 11px; color: #777; font-style: italic; line-height: 1.4;">
         This is a system-generated document authenticated through computer-generated facial recognition technology and is valid without a handwritten signature.
     </div>
 </div>
