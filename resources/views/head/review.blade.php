@@ -1,5 +1,4 @@
 @include('layout.header')
-@include('layout.reloading')
 <script>
 (function () {
 
