@@ -158,18 +158,17 @@
             </div>
         </div> -->
     </div>
-
 <!-- Digital Authorization -->
-<div class="section" style="font-family: Arial, sans-serif; color: #333;">
+<div class="section" style="font-family: Arial, sans-serif; color: #333; display: flex; flex-direction: column; align-items: center;">
 
-    <div style="display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between; margin-bottom: 16px;">
+    <div style="display: flex; flex-wrap: wrap; gap: 24px; justify-content: center;">
 
         <!-- End User Panel (Left) -->
-        <div style="flex: 1; min-width: 260px; background-color: #fdfdfd; border: 1px solid #ddd; border-radius: 12px; padding: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+        <div style="background-color: #fdfdfd; border: 1px solid #ddd; border-radius: 12px; padding: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); display: inline-block;">
             <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 14px; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #2c3e50;">
                 End User
             </h4>
-            <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; flex-direction: column; gap: 12px; white-space: nowrap;">
                 <div style="font-size: 13px; line-height: 1.5;">
                     <strong>Prepared by:</strong> {{ $evaluation->digitalApprovals->where('role','Prepared By')->first()->full_name ?? '-' }}<br>
                     <strong>Designation:</strong> {{ $evaluation->digitalApprovals->where('role','Prepared By')->first()->designation ?? '-' }}
@@ -186,11 +185,11 @@
         </div>
 
         <!-- Head Authorization Panel (Right) -->
-        <div style="flex: 1; min-width: 260px; background-color: #fdfdfd; border: 1px solid #ddd; border-radius: 12px; padding: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+        <div style="background-color: #fdfdfd; border: 1px solid #ddd; border-radius: 12px; padding: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); display: inline-block;">
             <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 14px; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #2c3e50;">
                 Head Authorization
             </h4>
-            <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; flex-direction: column; gap: 12px; white-space: nowrap;">
                 <div style="font-size: 13px; line-height: 1.5;">
                     <strong>Prepared by:</strong> {{ $evaluation->digitalApprovals->where('role','Head')->first()->full_name ?? '-' }}<br>
                     <strong>Designation:</strong> {{ $evaluation->digitalApprovals->where('role','Head')->first()->designation ?? '-' }}
@@ -208,7 +207,7 @@
 
     </div>
 
-    <div style="text-align: center; margin-top: 20px; font-size: 11px; color: #777; font-style: italic; line-height: 1.4;">
+    <div style="text-align: center; margin-top: 20px; font-size: 11px; color: #777; font-style: italic; line-height: 1.4; max-width: 500px;">
         This is a system-generated document authenticated through computer-generated facial recognition technology and is valid without a handwritten signature.
     </div>
 </div>
