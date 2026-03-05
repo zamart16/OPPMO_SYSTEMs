@@ -186,10 +186,10 @@ function renderTable(data) {
                 <td class="px-6 py-4">${evaluation.date_evaluation || 'PENDING'}</td>
                 <td class="px-6 py-4">${expandableCell(evaluator)}</td>
                 <td class="px-6 py-4">${expandableCell(evaluation.department)}</td>
-<td class="px-6 py-4 font-semibold ${hasIncomplete 
-    ? '' 
-    : weightedScore >= 60 
-        ? 'bg-green-100 text-green-800 rounded' 
+<td class="px-6 py-4 font-semibold ${hasIncomplete
+    ? ''
+    : weightedScore >= 60
+        ? 'bg-green-100 text-green-800 rounded'
         : 'bg-red-100 text-red-800 rounded'}">
     <strong>${hasIncomplete ? 'PENDING' : `${weightedScore}%`}</strong>
 </td>
@@ -366,34 +366,36 @@ function renderTable(data) {
 //         }
 //     });
 
-  tableBody.addEventListener('change', async function(e) {
+tableBody.addEventListener('change', async function(e) {
     if (!e.target.classList.contains('evaluationAction')) return;
 
     const evaluationId = e.target.dataset.id;
     const action = e.target.value;
     if (!evaluationId) return;
 
-    // Only show loading for actions other than 'link'
     if (action !== 'link') {
-        Swal.fire({ 
-            title: 'Processing...', 
-            allowOutsideClick: false, 
-            didOpen: () => Swal.showLoading() 
+        Swal.fire({
+            title: 'Processing...',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
         });
     }
 
     try {
-        // Get the full evaluation object from filteredData
         const evaluation = filteredData.find(ev => ev.id == evaluationId);
         if (!evaluation) throw new Error('Evaluation not found');
 
         if (action === 'review') {
             await viewEvaluation(evaluationId);
+
         } else if (action === 'edit') {
             await updateEvaluation(evaluationId);
+
         } else if (action === 'download') {
             window.open(`/evaluations/${evaluationId}/download`, '_blank');
+
         } else if (action === 'delete') {
+
             if (confirm('Delete this evaluation?')) {
                 const res = await fetch(`/evaluations/${evaluationId}`, {
                     method: 'DELETE',
@@ -402,14 +404,14 @@ function renderTable(data) {
                         'Accept': 'application/json'
                     }
                 });
+
                 const data = await res.json();
                 if (data.success) fetchEvaluations();
                 else alert(data.message || 'Delete failed.');
             }
+
         } else if (action === 'link') {
-            // -----------------------
-            // Copy Head Review Link
-            // -----------------------
+
             if (!evaluation.head_review_token) {
                 Swal.fire('Error!', 'No active Head review link available.', 'error');
                 return;
@@ -417,36 +419,89 @@ function renderTable(data) {
 
             const origin = window.location.origin;
             const reviewUrl = `${origin}/evaluation/head-review/${evaluation.head_review_token}`;
+            const reviewCode = evaluation.head_review_code ?? '';
 
             Swal.fire({
                 icon: 'info',
-                title: 'Head Review Link',
+                title: 'Head Review Access',
                 html: `
+                    <style>
+                        .copy-btn{
+                            padding:8px 14px;
+                            border:none;
+                            border-radius:6px;
+                            cursor:pointer;
+                            background:#f97316;
+                            color:white;
+                            transition:all .25s ease;
+                        }
+
+                        .copy-btn:hover{
+                            transform:scale(1.05);
+                            box-shadow:0 4px 10px rgba(0,0,0,.2);
+                        }
+
+                        .copied{
+                            background:#16a34a !important;
+                            transform:scale(1.1);
+                        }
+                    </style>
+
+                    <label style="font-weight:600;">Review Link</label>
                     <input type="text" id="copyEvalLink" class="swal2-input" value="${reviewUrl}" readonly>
-                    <button id="copyLinkBtn" class="swal2-confirm swal2-styled" style="margin-top:5px;">Copy Link</button>
+
+                    <button id="copyLinkBtn" class="copy-btn">
+                        📋 Copy Link
+                    </button>
+
+                    <br><br>
+
+                    <label style="font-weight:600;">Review Code</label>
+                    <input type="text" id="copyEvalCode" class="swal2-input" value="${reviewCode}" readonly>
+
+                    <button id="copyCodeBtn" class="copy-btn">
+                        🔐 Copy Code
+                    </button>
                 `,
                 showConfirmButton: false,
                 showCloseButton: true,
+                allowOutsideClick: true,
                 didOpen: () => {
-                    const copyBtn = document.getElementById('copyLinkBtn');
-                    copyBtn.addEventListener('click', () => {
-                        const linkInput = document.getElementById('copyEvalLink');
-                        linkInput.select();
-                        linkInput.setSelectionRange(0, 99999);
-                        document.execCommand('copy');
-                        Swal.fire('Copied!', 'Head Review link copied to clipboard.', 'success');
-                    });
+
+                    function animateCopy(button, text){
+                        navigator.clipboard.writeText(text);
+
+                        const original = button.innerHTML;
+
+                        button.classList.add('copied');
+                        button.innerHTML = "✔ Copied";
+
+                        setTimeout(()=>{
+                            button.classList.remove('copied');
+                            button.innerHTML = original;
+                        },1500);
+                    }
+
+                    document.getElementById('copyLinkBtn')
+                        .addEventListener('click', (e)=>{
+                            animateCopy(e.target, reviewUrl);
+                        });
+
+                    document.getElementById('copyCodeBtn')
+                        .addEventListener('click', (e)=>{
+                            animateCopy(e.target, reviewCode);
+                        });
+
                 }
             });
         }
+
     } catch (err) {
         console.error(err);
         Swal.fire('Error!', err.message || 'Action failed.', 'error');
-    } finally {
-        // Reset select dropdown
-        e.target.value = '';
 
-        // Only close Swal if it was the loading Swal (not 'link')
+    } finally {
+        e.target.value = '';
         if (action !== 'link') Swal.close();
     }
 });
