@@ -421,79 +421,122 @@ tableBody.addEventListener('change', async function(e) {
             const reviewUrl = `${origin}/evaluation/head-review/${evaluation.head_review_token}`;
             const reviewCode = evaluation.head_review_code ?? '';
 
-            Swal.fire({
-                icon: 'info',
-                title: 'Head Review Access',
-                html: `
-                    <style>
-                        .copy-btn{
-                            padding:8px 14px;
-                            border:none;
-                            border-radius:6px;
-                            cursor:pointer;
-                            background:#f97316;
-                            color:white;
-                            transition:all .25s ease;
-                        }
+Swal.fire({
+    title: 'Head Review Access',
+    width: 520,
+    showConfirmButton: false,
+    showCloseButton: true,
+    allowOutsideClick: true,
+    html: `
+    <style>
 
-                        .copy-btn:hover{
-                            transform:scale(1.05);
-                            box-shadow:0 4px 10px rgba(0,0,0,.2);
-                        }
+        .access-container{
+            text-align:left;
+            font-family:system-ui;
+        }
 
-                        .copied{
-                            background:#16a34a !important;
-                            transform:scale(1.1);
-                        }
-                    </style>
+        .access-card{
+            background:#f9fafb;
+            border:1px solid #e5e7eb;
+            border-radius:10px;
+            padding:14px;
+            margin-top:12px;
+            transition:all .2s ease;
+        }
 
-                    <label style="font-weight:600;">Review Link</label>
-                    <input type="text" id="copyEvalLink" class="swal2-input" value="${reviewUrl}" readonly>
+        .access-card:hover{
+            border-color:#fb923c;
+            box-shadow:0 5px 15px rgba(0,0,0,.08);
+        }
 
-                    <button id="copyLinkBtn" class="copy-btn">
-                        📋 Copy Link
-                    </button>
+        .access-label{
+            font-weight:600;
+            font-size:13px;
+            color:#374151;
+            margin-bottom:6px;
+            display:block;
+        }
 
-                    <br><br>
+        .access-input{
+            width:100%;
+            border:1px solid #d1d5db;
+            border-radius:6px;
+            padding:8px 10px;
+            font-size:13px;
+            background:white;
+        }
 
-                    <label style="font-weight:600;">Review Code</label>
-                    <input type="text" id="copyEvalCode" class="swal2-input" value="${reviewCode}" readonly>
+        .copy-btn{
+            margin-top:10px;
+            width:100%;
+            padding:9px;
+            border:none;
+            border-radius:7px;
+            cursor:pointer;
+            font-weight:600;
+            font-size:13px;
+            color:white;
+            background:linear-gradient(135deg,#fb923c,#f97316);
+            transition:all .25s ease;
+        }
 
-                    <button id="copyCodeBtn" class="copy-btn">
-                        🔐 Copy Code
-                    </button>
-                `,
-                showConfirmButton: false,
-                showCloseButton: true,
-                allowOutsideClick: true,
-                didOpen: () => {
+        .copy-btn:hover{
+            transform:translateY(-1px);
+            box-shadow:0 6px 14px rgba(0,0,0,.15);
+        }
 
-                    function animateCopy(button, text){
-                        navigator.clipboard.writeText(text);
+        .copy-btn.copied{
+            background:linear-gradient(135deg,#22c55e,#16a34a);
+            transform:scale(1.05);
+        }
 
-                        const original = button.innerHTML;
+    </style>
 
-                        button.classList.add('copied');
-                        button.innerHTML = "✔ Copied";
+    <div class="access-container">
 
-                        setTimeout(()=>{
-                            button.classList.remove('copied');
-                            button.innerHTML = original;
-                        },1500);
-                    }
+        <div class="access-card">
+            <span class="access-label">🔗 Review Link</span>
+            <input type="text" id="copyEvalLink" class="access-input" value="${reviewUrl}" readonly>
+            <button id="copyLinkBtn" class="copy-btn">Copy Link</button>
+        </div>
 
-                    document.getElementById('copyLinkBtn')
-                        .addEventListener('click', (e)=>{
-                            animateCopy(e.target, reviewUrl);
-                        });
+        <div class="access-card">
+            <span class="access-label">🔐 Review Code</span>
+            <input type="text" id="copyEvalCode" class="access-input" value="${reviewCode}" readonly>
+            <button id="copyCodeBtn" class="copy-btn">Copy Code</button>
+        </div>
 
-                    document.getElementById('copyCodeBtn')
-                        .addEventListener('click', (e)=>{
-                            animateCopy(e.target, reviewCode);
-                        });
+    </div>
+    `,
+    didOpen: () => {
 
-                }
+        function animateCopy(button, text){
+
+            navigator.clipboard.writeText(text);
+
+            const original = button.innerHTML;
+
+            button.classList.add('copied');
+            button.innerHTML = "✔ Copied";
+
+            setTimeout(()=>{
+                button.classList.remove('copied');
+                button.innerHTML = original;
+            },1600);
+        }
+
+        document.getElementById('copyLinkBtn')
+            .addEventListener('click', (e)=>{
+                animateCopy(e.target, reviewUrl);
             });
+
+        document.getElementById('copyCodeBtn')
+            .addEventListener('click', (e)=>{
+                animateCopy(e.target, reviewCode);
+            });
+
+    }
+});
         }
 
     } catch (err) {
