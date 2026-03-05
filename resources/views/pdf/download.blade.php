@@ -166,7 +166,7 @@
     <div style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between;">
 
         <!-- End User Panel (Left) -->
-        <div style="flex: 1; min-width: 250px; background-color: #fff; border: 1px solid #ccc; border-radius: 12px; padding: 16px;">
+        <div style="flex: 1; min-width: 100px; background-color: #fff; border: 1px solid #ccc; border-radius: 12px; padding: 16px;">
             <h4 style="font-size: 16px; font-weight: bold; margin-bottom: 12px; border-bottom: 1px solid #ccc; padding-bottom: 8px;">
                 End User
             </h4>
@@ -187,7 +187,7 @@
         </div>
 
         <!-- Head Authorization Panel (Right) -->
-        <div style="flex: 1; min-width: 250px; background-color: #fff; border: 1px solid #ccc; border-radius: 12px; padding: 16px;">
+        <div style="flex: 1; min-width: 100px; background-color: #fff; border: 1px solid #ccc; border-radius: 12px; padding: 16px;">
             <h4 style="font-size: 16px; font-weight: bold; margin-bottom: 12px; border-bottom: 1px solid #ccc; padding-bottom: 8px;">
                 Head Authorization
             </h4>
