@@ -598,24 +598,162 @@ Swal.fire({
             ? (selectedScores.reduce((a,b)=>a+b,0)/selectedScores.length).toFixed(2)
             : 'N/A';
 
-        modalContent.innerHTML = `
-            <p class="mb-2 font-medium">Selected <strong>${rowsData.length}</strong> evaluations</p>
-            <div class="overflow-x-auto max-h-96 mb-4">
-                <table class="w-full border-collapse table-auto text-sm">
-                    <thead class="bg-gray-100 sticky top-0">
-                        <tr>
-                            <th>Supplier Name</th>
-                            <th>PO Number</th>
-                            <th>Evaluation Date</th>
-                            <th>Department</th>
-                            <th>Evaluation Score</th>
-                        </tr>
-                    </thead>
-                    <tbody>${tableRows}</tbody>
-                </table>
-            </div>
-            <p class="mt-2 font-semibold text-lg">Average Evaluation Score: ${average}</p>
-        `;
+// ==========================
+// SIMPLE ANALYTICS OBJECT
+// ==========================
+window.evalAnalytics = window.evalAnalytics || {
+    totalRowsViewed: 0,
+    lastAverage: 0,
+    lastOpened: null
+};
+
+// Update analytics
+evalAnalytics.totalRowsViewed += rowsData.length;
+evalAnalytics.lastAverage = average;
+evalAnalytics.lastOpened = new Date().toISOString();
+
+console.log("Evaluation Analytics:", evalAnalytics);
+
+
+// ==========================
+// MODAL CONTENT
+// ==========================
+modalContent.innerHTML = `
+<style>
+
+.calc-header{
+    background:linear-gradient(135deg,#fb923c,#f97316);
+    color:white;
+    padding:14px;
+    border-radius:10px 10px 0 0;
+    font-weight:600;
+    font-size:16px;
+}
+
+.calc-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13px;
+}
+
+.calc-table th{
+    background:#f3f4f6;
+    padding:10px;
+    text-align:left;
+    font-weight:600;
+}
+
+.calc-table td{
+    padding:9px;
+    border-bottom:1px solid #eee;
+}
+
+.calc-table tbody tr{
+    transition:all .2s ease;
+}
+
+.calc-table tbody tr:hover{
+    background:#fff7ed;
+    transform:scale(1.01);
+}
+
+/* Colored badges for score */
+.score-badge{
+    padding:4px 8px;
+    border-radius:6px;
+    font-weight:600;
+    text-align:center;
+    display:inline-block;
+    min-width:50px;
+}
+
+.score-low{
+    background:#ef4444;  /* red */
+    color:white;
+}
+
+.score-medium{
+    background:#f59e0b; /* orange */
+    color:white;
+}
+
+.score-high{
+    background:#22c55e; /* green */
+    color:white;
+}
+
+.avg-box{
+    margin-top:15px;
+    padding:12px;
+    border-radius:8px;
+    font-size:18px;
+    font-weight:700;
+    text-align:center;
+    animation:scorePop .4s ease;
+}
+
+@keyframes scorePop{
+    0%{transform:scale(.9);opacity:0;}
+    100%{transform:scale(1);opacity:1;}
+}
+
+</style>
+
+<div class="calc-header">
+📊 Evaluation Summary
+</div>
+
+
+<div class="stats-row" style="display:flex;gap:10px;margin-bottom:15px;">
+    <div class="stat-card" style="flex:1;background:#f9fafb;border-radius:8px;padding:10px;text-align:center;font-size:13px;border:1px solid #eee;">
+        Records
+        <strong>${rowsData.length}</strong>
+    </div>
+
+    <div class="stat-card" style="flex:1;background:#f9fafb;border-radius:8px;padding:10px;text-align:center;font-size:13px;border:1px solid #eee;">
+        Average Score
+        <strong>${average}%</strong>
+    </div>
+</div>
+
+<div class="overflow-x-auto max-h-96">
+<table class="calc-table">
+<thead>
+<tr>
+<th>Supplier Name</th>
+<th>PO Number</th>
+<th>Evaluation Date</th>
+<th>Department</th>
+<th>Score</th>
+</tr>
+</thead>
+<tbody>
+${rowsData.map(d => {
+    let scoreClass = "score-high";
+    let numericScore = parseFloat(d.score);
+    if(isNaN(numericScore)) numericScore = 0;
+
+    if(numericScore < 60) scoreClass = "score-low";
+    else if(numericScore >= 60 && numericScore < 75) scoreClass = "score-medium";
+
+    return `
+    <tr>
+        <td>${d.supplierName}</td>
+        <td>${d.poNo}</td>
+        <td>${d.evalDate}</td>
+        <td>${d.department}</td>
+        <td><span class="score-badge ${scoreClass}">${d.score}</span></td>
+    </tr>
+    `;
+}).join('')}
+</tbody>
+</table>
+</div>
+
+<div class="avg-box" style="background:${average < 60 ? '#ef4444' : average < 75 ? '#f59e0b' : '#22c55e'}; color:white;">
+⭐ Average Evaluation Score: ${average}%
+</div>
+`;
         modal.classList.remove('hidden');
     });
 
