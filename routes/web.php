@@ -77,6 +77,9 @@ Route::get('/evaluation/head-review/{token}', [HeadController::class, 'reviewPag
 Route::get('/evaluation/review/{token}', [HeadController::class, 'reviewEvaluation'])->name('evaluation.review');
 
 
+Route::post('/evaluation/validate-code/{token}', [HeadController::class, 'validateCode']);
+
+
 
 
 
