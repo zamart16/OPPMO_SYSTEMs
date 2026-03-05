@@ -257,4 +257,35 @@ public function updateEvaluation(Request $request, $token)
         ], 500);
     }
 }
+
+
+
+public function validateCode(Request $request, $token)
+{
+    $request->validate([
+        'code' => 'required|string'
+    ]);
+
+    $link = EvaluationLink::active()
+        ->where('token', $token)
+        ->first();
+
+    if (!$link) {
+        return response()->json([
+            'success' => false,
+            'message' => 'This link is invalid or expired.'
+        ], 404);
+    }
+
+    if ($link->code !== $request->code) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Invalid review code.'
+        ], 422);
+    }
+
+    return response()->json([
+        'success' => true
+    ]);
+}
 }
