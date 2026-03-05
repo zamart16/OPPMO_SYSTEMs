@@ -4,48 +4,163 @@
     <meta charset="UTF-8">
     <title>Supplier Evaluation - {{ $evaluation->id ?? '' }}</title>
     <style>
-        body { font-family: sans-serif; font-size: 12px; color: #333; line-height: 1.4; }
+        body { 
+            font-family: "Segoe UI", Arial, sans-serif; 
+            font-size: 12px; 
+            color: #1f2937; 
+            line-height: 1.5; 
+            background-color: #f9fafb; 
+            margin: 0; 
+            padding: 20px; 
+        }
+
         h1, h2, h3, h4 { margin: 0; }
-        h1 { font-size: 18px; font-weight: bold; margin-bottom: 5px; }
-        h2 { font-size: 14px; font-weight: bold; margin-bottom: 5px; }
-        .section { margin-bottom: 20px; }
-        .section-title { font-weight: bold; margin-bottom: 5px; background-color: #f3f4f6; padding: 5px; border-left: 4px solid #3b82f6; }
-        .table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .table th, .table td { border: 1px solid #999; padding: 6px; vertical-align: top; }
-        .table th { background-color: #4b5563; color: white; text-align: left; font-weight: bold; }
-        .remarks { min-height: 50px; }
-        .rating-box { background-color: #d1fae5; padding: 10px; margin-bottom: 5px; text-align: center; font-weight: bold; }
-        .digital-auth img { width: 100px; height: 100px; object-fit: cover; border: 1px solid #ccc; }
-        .auth-panel { background-color: #fff; border: 1px solid #ccc; border-radius: 12px; padding: 16px; }
-        .auth-container { display: flex; flex-wrap: wrap; gap: 16px; }
-        .auth-panel img { margin-top: 8px; }
+
+        h1 { 
+            font-size: 18px; 
+            font-weight: 700; 
+            color: #1e40af; 
+        }
+
+        .section { 
+            margin-bottom: 24px; 
+        }
+
+        .section-title { 
+            font-weight: 600; 
+            margin-bottom: 8px; 
+            background-color: #e0e7ff; 
+            padding: 6px 10px; 
+            border-left: 4px solid #1e40af; 
+            color: #1e40af; 
+        }
+
+        .table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 8px; 
+        }
+
+        .table th, .table td { 
+            border: 1px solid #9ca3af; 
+            padding: 8px; 
+            vertical-align: top; 
+        }
+
+        .table th { 
+            background-color: #1e40af; 
+            color: white; 
+            text-align: left; 
+            font-weight: 600; 
+        }
+
+        .remarks { 
+            min-height: 50px; 
+        }
+
+        .rating-box { 
+            background-color: #dbeafe; 
+            padding: 12px; 
+            margin-bottom: 5px; 
+            text-align: center; 
+            font-weight: 600; 
+            border-radius: 8px;
+            border: 1px solid #3b82f6;
+            color: #1e40af;
+        }
+
+        /* Digital Authorization Panels */
+        .auth-container { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 24px; 
+            justify-content: center; 
+        }
+
+        .auth-panel { 
+            background-color: #ffffff; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 12px; 
+            padding: 20px; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05); 
+            display: inline-block;
+            min-width: 260px;
+        }
+
+        .auth-panel h4 { 
+            font-size: 16px; 
+            font-weight: 600; 
+            margin-bottom: 14px; 
+            border-bottom: 1px solid #e5e7eb; 
+            padding-bottom: 10px; 
+            color: #1e3a8a; 
+        }
+
+        .auth-panel div { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+        }
+
+        .auth-panel img { 
+            margin-top: 8px; 
+            width: 100px; 
+            height: 100px; 
+            object-fit: cover; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 8px;
+        }
+
+        /* Header */
+        .header { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 16px; 
+            text-align: center; 
+            margin-bottom: 24px;
+        }
+
+        .header h1 { 
+            margin-bottom: 4px; 
+        }
+
+        .header p { 
+            margin: 0; 
+            font-size: 12px; 
+            color: #475569;
+        }
+
+        /* Footer note */
+        .footer-note { 
+            text-align: center; 
+            margin-top: 20px; 
+            font-size: 11px; 
+            color: #6b7280; 
+            font-style: italic; 
+            line-height: 1.4; 
+            max-width: 500px; 
+        }
+
+        /* Table Emphasis */
+        td em { 
+            color: #374151; 
+            font-style: normal; 
+            font-size: 11px; 
+        }
     </style>
 </head>
 <body>
 
-<!-- Header -->
-<div class="section" style="display: flex; align-items: center; justify-content: center; gap: 16px; text-align: center;">
-    <!-- Logo -->
-    <!-- <img src="{{ public_path('logo.png') }}"
-         alt="Company Logo"
-         style="height: 70px; width: auto; object-fit: contain;"> -->
-
-    <!-- Title -->
-    <div>
-        <h1 style="margin: 0; font-size: 18px; font-weight: bold;">SUPPLIER'S EVALUATION FORM</h1>
-        <p style="margin: 0; font-size: 12px;">Performance Assessment & Rating System</p>
+    <!-- Header -->
+    <div class="header">
+        <!-- Logo -->
+        <!-- <img src="{{ public_path('logo.png') }}" alt="Company Logo" style="height:70px; object-fit:contain;"> -->
+        <div>
+            <h1>SUPPLIER'S EVALUATION FORM</h1>
+            <p>Performance Assessment & Rating System</p>
+        </div>
     </div>
-</div>
-
-    <!-- Instructions -->
-    <!-- <div class="section">
-        <div class="section-title">INSTRUCTIONS</div>
-        <ol style="padding-left: 20px; margin-top: 5px;">
-            <li>Check the box which corresponds to the supplier's performance based on the Purchase Order/Contract listed above.</li>
-            <li>In the Remarks / Specific Comments Column, provide details of any incidents or deviations. Use additional sheet if necessary.</li>
-            <li>When multiple POs are added, each evaluation is calculated separately for the overall rating.</li>
-        </ol>
-    </div> -->
 
     <!-- Evaluation Details -->
     <div class="section">
@@ -80,42 +195,6 @@
                 </tr>
             </thead>
             <tbody>
-                @php
-                    $criteriaWeightMap = [
-                        1 => [4 => 20, 3 => 15, 2 => 10, 1 => 5],         // PRICE
-                        2 => [4 => 30, 3 => 22.5, 2 => 15, 1 => 7.5],     // QUALITY
-                        3 => [4 => 25, 3 => 18.75, 2 => 12.5, 1 => 6.25], // CUSTOMER CARE
-                        4 => [4 => 25, 3 => 18.75, 2 => 12.5, 1 => 6.25], // DELIVERY
-                    ];
-                    $ratingDescriptions = [
-                        1 => [
-                            1 => "Bid amount is higher than the prevailing market price against the brand/services delivered.",
-                            2 => "Goods delivered with recurring or significant damages/defects, affecting usability and functionality.",
-                            3 => "If any three (3) of the customer care details are lacking.",
-                            4 => "Goods/Services delivered eleven (11) or more days after expiration."
-                        ],
-                        2 => [
-                            1 => "Some mismatch between bid amount and brand/services delivered; notably higher than market range.",
-                            2 => "Goods delivered in accordance with specs but of low quality.",
-                            3 => "If any two (2) of the customer care details are lacking.",
-                            4 => "Goods/Services delivered six (6) to ten (10) days after expiration."
-                        ],
-                        3 => [
-                            1 => "Bid amount generally aligns with brand/services delivered; minor deviations within acceptable range.",
-                            2 => "Goods delivered with minor damages/defects, immediately corrected without affecting functionality.",
-                            3 => "If one (1) of the customer care details is lacking.",
-                            4 => "Goods/Services delivered one (1) to five (5) days after expiration."
-                        ],
-                        4 => [
-                            1 => "Bid amount is reasonable based on the brand/services delivered; consistent with market rates; no overpricing.",
-                            2 => "Goods delivered according to specifications and acceptable quality.",
-                            3 => "Accessible, responsive to inquiries/complaints, adaptable to end-user needs, competent staff.",
-                            4 => "Goods/Services delivered on time."
-                        ],
-                    ];
-                    $overallScore = 0;
-                @endphp
-
                 @foreach($evaluation->criteriaScores as $score)
                     @php
                         $criteriaId = $score->criteria_id;
@@ -134,9 +213,7 @@
                             <br>
                             <em>{{ $description }}</em>
                         </td>
-                        <td class="remarks">
-                            {{ $score->remarks ?? '' }}
-                        </td>
+                        <td class="remarks">{{ $score->remarks ?? '' }}</td>
                     </tr>
                 @endforeach
             </tbody>
@@ -151,66 +228,45 @@
         <div class="rating-box">
             <strong>{{ number_format($overallScore,2) }}%</strong> - {{ $status }}
         </div>
-        <!-- <div style="display:flex; justify-content: space-around; margin-top:10px;">
-            <div style="text-align:center;">
-                <div>Passing Rate</div>
-                <div>60%</div>
-            </div>
-        </div> -->
     </div>
-<!-- Digital Authorization -->
-<div class="section" style="font-family: Arial, sans-serif; color: #333; display: flex; flex-direction: column; align-items: center;">
 
-    <div style="display: flex; flex-wrap: wrap; gap: 24px; justify-content: center;">
-
-        <!-- End User Panel (Left) -->
-        <div style="background-color: #fdfdfd; border: 1px solid #ddd; border-radius: 12px; padding: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); display: inline-block;">
-            <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 14px; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #2c3e50;">
-                End User
-            </h4>
-            <div style="display: flex; flex-direction: column; gap: 12px; white-space: nowrap;">
-                <div style="font-size: 13px; line-height: 1.5;">
+    <!-- Digital Authorization -->
+    <div class="section auth-container">
+        <!-- End User -->
+        <div class="auth-panel">
+            <h4>End User</h4>
+            <div>
+                <div>
                     <strong>Prepared by:</strong> {{ $evaluation->digitalApprovals->where('role','Prepared By')->first()->full_name ?? '-' }}<br>
                     <strong>Designation:</strong> {{ $evaluation->digitalApprovals->where('role','Prepared By')->first()->designation ?? '-' }}
                 </div>
-                <div style="font-size: 11px; color: #666;">
-                    Already submitted by End User
-                </div>
+                <div style="font-size:11px; color:#475569;">Already submitted by End User</div>
                 @if(!empty($evaluation->digitalApprovals->where('role','Prepared By')->first()->image))
-                    <img hidden src="{{ public_path('storage/' . $evaluation->digitalApprovals->where('role','Prepared By')->first()->image) }}"
-                         alt="End User Signature"
-                         style="width: 100px; height: 100px; object-fit: cover; border: 1px solid #ccc; border-radius: 8px; margin-top: 8px;">
+                    <img hidden src="{{ public_path('storage/' . $evaluation->digitalApprovals->where('role','Prepared By')->first()->image) }}" alt="End User Signature">
                 @endif
             </div>
         </div>
 
-        <!-- Head Authorization Panel (Right) -->
-        <div style="background-color: #fdfdfd; border: 1px solid #ddd; border-radius: 12px; padding: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); display: inline-block;">
-            <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 14px; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #2c3e50;">
-                Head Authorization
-            </h4>
-            <div style="display: flex; flex-direction: column; gap: 12px; white-space: nowrap;">
-                <div style="font-size: 13px; line-height: 1.5;">
+        <!-- Head Authorization -->
+        <div class="auth-panel">
+            <h4>Head Authorization</h4>
+            <div>
+                <div>
                     <strong>Prepared by:</strong> {{ $evaluation->digitalApprovals->where('role','Head')->first()->full_name ?? '-' }}<br>
                     <strong>Designation:</strong> {{ $evaluation->digitalApprovals->where('role','Head')->first()->designation ?? '-' }}
                 </div>
-                <div style="font-size: 11px; color: #666;">
-                    Already submitted by Office Head
-                </div>
+                <div style="font-size:11px; color:#475569;">Already submitted by Office Head</div>
                 @if(!empty($evaluation->digitalApprovals->where('role','Head')->first()->image))
-                    <img hidden src="{{ public_path('storage/' . $evaluation->digitalApprovals->where('role','Head')->first()->image) }}"
-                         alt="Head Signature"
-                         style="width: 100px; height: 100px; object-fit: cover; border: 1px solid #ccc; border-radius: 8px; margin-top: 8px;">
+                    <img hidden src="{{ public_path('storage/' . $evaluation->digitalApprovals->where('role','Head')->first()->image) }}" alt="Head Signature">
                 @endif
             </div>
         </div>
-
     </div>
 
-    <div style="text-align: center; margin-top: 20px; font-size: 11px; color: #777; font-style: italic; line-height: 1.4; max-width: 500px;">
+    <!-- Footer Note -->
+    <div class="footer-note">
         This is a system-generated document authenticated through computer-generated facial recognition technology and is valid without a handwritten signature.
     </div>
-</div>
 
 </body>
 </html>
