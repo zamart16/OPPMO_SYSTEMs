@@ -161,58 +161,146 @@
 
 <!-- Digital Authorization -->
 <div class="section">
-    <!-- <div class="section-title">Digital Authorization</div> -->
+    <div class="section-title">Digital Authorization</div>
 
-    <div style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between;">
+    <div class="auth-container">
 
         <!-- End User Panel (Left) -->
-        <div style="flex: 1; min-width: 100px; background-color: #fff; border: 1px solid #ccc; border-radius: 12px; padding: 16px;">
-            <h4 style="font-size: 16px; font-weight: bold; margin-bottom: 12px; border-bottom: 1px solid #ccc; padding-bottom: 8px;">
-                End User
-            </h4>
-            <div>
-                <div style="font-size: 12px; margin-bottom: 8px;">
-                    <strong>Prepared by:</strong> {{ $evaluation->digitalApprovals->where('role','Prepared By')->first()->full_name ?? '-' }}<br>
-                    <strong>Designation:</strong> {{ $evaluation->digitalApprovals->where('role','Prepared By')->first()->designation ?? '-' }}
+        <div class="auth-panel">
+            <div class="auth-content">
+                <div class="auth-text">
+                    <div class="auth-role">End User</div>
+                    <div><strong>Prepared by:</strong> {{ $evaluation->digitalApprovals->where('role','Prepared By')->first()->full_name ?? '-' }}</div>
+                    <div><strong>Designation:</strong> {{ $evaluation->digitalApprovals->where('role','Prepared By')->first()->designation ?? '-' }}</div>
+                    <div class="auth-note">Already submitted by End User</div>
                 </div>
-                <div style="font-size: 10px; color: #555; margin-bottom: 8px;">
-                    Already submitted by End User
+                <div class="auth-image">
+                    @if(!empty($evaluation->digitalApprovals->where('role','Prepared By')->first()->image))
+                        <img hidden src="{{ public_path('storage/' . $evaluation->digitalApprovals->where('role','Prepared By')->first()->image) }}" alt="End User Signature">
+                    @endif
                 </div>
-                @if(!empty($evaluation->digitalApprovals->where('role','Prepared By')->first()->image))
-                    <img hidden src="{{ public_path('storage/' . $evaluation->digitalApprovals->where('role','Prepared By')->first()->image) }}"
-                         alt="End User Signature"
-                         style="width: 100px; height: 100px; object-fit: cover; border: 1px solid #ccc; border-radius: 8px;">
-                @endif
             </div>
         </div>
 
         <!-- Head Authorization Panel (Right) -->
-        <div style="flex: 1; min-width: 100px; background-color: #fff; border: 1px solid #ccc; border-radius: 12px; padding: 16px;">
-            <h4 style="font-size: 16px; font-weight: bold; margin-bottom: 12px; border-bottom: 1px solid #ccc; padding-bottom: 8px;">
-                Head Authorization
-            </h4>
-            <div>
-                <div style="font-size: 12px; margin-bottom: 8px;">
-                    <strong>Prepared by:</strong> {{ $evaluation->digitalApprovals->where('role','Head')->first()->full_name ?? '-' }}<br>
-                    <strong>Designation:</strong> {{ $evaluation->digitalApprovals->where('role','Head')->first()->designation ?? '-' }}
+        <div class="auth-panel-1">
+            <div class="auth-content">
+                <div class="auth-text">
+                    <div class="auth-role">Head Authorization</div>
+                    <div><strong>Prepared by:</strong> {{ $evaluation->digitalApprovals->where('role','Head')->first()->full_name ?? '-' }}</div>
+                    <div><strong>Designation:</strong> {{ $evaluation->digitalApprovals->where('role','Head')->first()->designation ?? '-' }}</div>
+                    <div class="auth-note">Already submitted by Office Head</div>
                 </div>
-                <div style="font-size: 10px; color: #555; margin-bottom: 8px;">
-                    Already submitted by Office Head
+                <div class="auth-image">
+                    @if(!empty($evaluation->digitalApprovals->where('role','Head')->first()->image))
+                        <img hidden src="{{ public_path('storage/' . $evaluation->digitalApprovals->where('role','Head')->first()->image) }}" alt="Head Signature">
+                    @endif
                 </div>
-                @if(!empty($evaluation->digitalApprovals->where('role','Head')->first()->image))
-                    <img hidden src="{{ public_path('storage/' . $evaluation->digitalApprovals->where('role','Head')->first()->image) }}"
-                         alt="Head Signature"
-                         style="width: 100px; height: 100px; object-fit: cover; border: 1px solid #ccc; border-radius: 8px;">
-                @endif
             </div>
         </div>
 
     </div>
 
-    <div style="text-align: center; margin-top: 16px; font-size: 11px; color: #555; font-style: italic;">
+    <div class="auth-footer">
         This is a system-generated document authenticated through computer-generated facial recognition technology and is valid without a handwritten signature.
     </div>
 </div>
+
+<style>
+.auth-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: nowrap;
+}
+
+
+.auth-panel {
+    flex: 1;
+    min-width: 250px;
+    max-width: 20%;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 12px;
+    box-sizing: border-box;
+    transition: box-shadow 0.3s ease;
+}
+
+.auth-panel-1 {
+    flex: 1;
+    min-width: 250px;
+    max-width: 20%;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 12px;
+    margin-left: 60.3%;
+    margin-top: -18%;
+    box-sizing: border-box;
+    transition: box-shadow 0.3s ease;
+}
+
+.auth-panel:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Horizontal content inside panel */
+.auth-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.auth-text {
+    font-size: 12px;
+    line-height: 1.3;
+    flex: 1;
+}
+
+.auth-role {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.auth-note {
+    font-size: 10px;
+    color: #6b7280;
+    font-style: italic;
+    margin-top: 4px;
+}
+
+.auth-image img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 10px;
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* Responsive: stack panels on smaller screens */
+@media (max-width: 500px) {
+    .auth-container {
+        flex-direction: column;
+        gap: 12px;
+    }
+    .auth-panel {
+        max-width: 100%;
+    }
+    .auth-content {
+        flex-direction: row;
+    }
+}
+</style>
 
 </body>
 </html>
