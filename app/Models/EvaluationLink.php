@@ -12,6 +12,7 @@ class EvaluationLink extends Model
     protected $fillable = [
         'evaluation_id',
         'token',
+        'code',
         'reviewer_role',
         'reviewer_email',
         'expires_at',
