@@ -35,10 +35,10 @@
                 <span class="font-bold text-primary mr-2 mt-0.5">2.</span>
                 <span>In the Remarks / Specific Comments Column, please provide the details especially incidents/description of the delivery in case it fell beyond what was expected. You may use additional sheet, if necessary.</span>
               </p>
-              <p class="flex items-start">
+              <!-- <p class="flex items-start">
                 <span class="font-bold text-primary mr-2 mt-0.5">3.</span>
                 <span>When multiple POs are added, each evaluation will be calculated separately and combined for the overall rating.</span>
-              </p>
+              </p> -->
             </div>
           </div>
         </div>
