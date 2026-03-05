@@ -6,6 +6,9 @@
 
     function showWarning(message) {
 
+        // If another SweetAlert modal is open, don't interrupt
+        if (Swal.isVisible()) return;
+
         if (alertShown) return;
         alertShown = true;
 
@@ -42,19 +45,25 @@
 
 /* DISABLE RIGHT CLICK */
 document.addEventListener("contextmenu", function (e) {
+
     e.preventDefault();
 
-    Swal.fire({
-        icon: "warning",
-        title: "Action Blocked",
-        text: "Right click is not allowed on this page.",
-        confirmButtonText: "OK",
-        showCloseButton: true
-    });
+    if (!Swal.isVisible()) {
+
+        Swal.fire({
+            icon: "warning",
+            title: "Action Blocked",
+            text: "Right click is not allowed on this page.",
+            confirmButtonText: "OK",
+            showCloseButton: true
+        });
+
+    }
+
 });
 
 
-/* BLOCK DEVTOOLS KEY SHORTCUTS */
+/* BLOCK DEVTOOLS SHORTCUTS */
 document.addEventListener("keydown", function (e) {
 
     if (
@@ -66,15 +75,20 @@ document.addEventListener("keydown", function (e) {
 
         e.preventDefault();
 
-        Swal.fire({
-            icon: "warning",
-            title: "Action Blocked",
-            text: "Opening Developer Tools is not allowed.",
-            confirmButtonText: "OK",
-            showCloseButton: true
-        });
+        if (!Swal.isVisible()) {
+
+            Swal.fire({
+                icon: "warning",
+                title: "Action Blocked",
+                text: "Opening Developer Tools is not allowed.",
+                confirmButtonText: "OK",
+                showCloseButton: true
+            });
+
+        }
 
         return false;
+
     }
 
 });
