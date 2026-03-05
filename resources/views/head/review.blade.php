@@ -3,27 +3,30 @@
 <script>
 (function () {
 
-    let devtoolsOpen = false;
+    let triggered = false;
 
-    function triggerProtection() {
+    function blockAccess(message = "Developer tools are not allowed on this page.") {
 
-        if (devtoolsOpen) return;
-        devtoolsOpen = true;
-
-        document.body.innerHTML = "";
+        if (triggered) return;
+        triggered = true;
 
         Swal.fire({
-            icon: "error",
-            title: "Access Denied",
-            text: "Developer tools are not allowed on this page.",
+            icon: "warning",
+            title: "Access Blocked",
+            text: message,
             allowOutsideClick: false,
             allowEscapeKey: false,
-            confirmButtonText: "Leave Page"
+            confirmButtonText: "OK"
         }).then(() => {
+
+            // Redirect or reload
             window.location.href = "/devtools-warning";
+            // location.reload();
+
         });
     }
 
+    /* DEVTOOLS SIZE DETECTION */
     function detectDevTools() {
 
         const threshold = 160;
@@ -32,35 +35,60 @@
             window.outerWidth - window.innerWidth > threshold ||
             window.outerHeight - window.innerHeight > threshold
         ) {
-            triggerProtection();
+            blockAccess();
         }
 
     }
 
-    setInterval(detectDevTools, 500);
+    setInterval(detectDevTools, 800);
+
+    /* CONSOLE DETECTION TRICK */
+    const element = new Image();
+
+    Object.defineProperty(element, 'id', {
+        get: function () {
+            blockAccess();
+        }
+    });
+
+    setInterval(function () {
+        console.log(element);
+    }, 1000);
 
 })();
 
 
-// Disable Right Click
-document.addEventListener("contextmenu", function(e) {
+/* DISABLE RIGHT CLICK */
+document.addEventListener("contextmenu", function (e) {
     e.preventDefault();
+
     Swal.fire({
         icon: "warning",
-        title: "Action blocked",
-        text: "Right click is disabled on this page."
+        title: "Action Blocked",
+        text: "Right click is not allowed on this page.",
+        confirmButtonText: "OK",
+        allowOutsideClick: false
+    }).then(() => {
+
+        window.location.href = "/devtools-warning";
+
     });
 });
 
 
-// Block DevTools keyboard shortcuts
-document.addEventListener("keydown", function(e) {
+/* BLOCK DEVTOOLS KEY SHORTCUTS */
+document.addEventListener("keydown", function (e) {
 
     if (
+
         e.key === "F12" ||
+
         (e.ctrlKey && e.shiftKey && ["I","J","C"].includes(e.key)) ||
+
         (e.ctrlKey && e.key === "U") ||
+
         (e.metaKey && e.altKey && e.key === "I")
+
     ) {
 
         e.preventDefault();
@@ -68,38 +96,20 @@ document.addEventListener("keydown", function(e) {
         Swal.fire({
             icon: "warning",
             title: "Action Blocked",
-            text: "Opening Developer Tools is not allowed!"
+            text: "Opening Developer Tools is not allowed.",
+            confirmButtonText: "OK",
+            allowOutsideClick: false
+        }).then(() => {
+
+            window.location.href = "/devtools-warning";
+
         });
 
         return false;
+
     }
 
 });
-
-
-// Console detection trick
-(function(){
-
-    const element = new Image();
-
-    Object.defineProperty(element, 'id', {
-        get: function () {
-            window.location.href = "/devtools-warning";
-        }
-    });
-
-    setInterval(function(){
-        console.log(element);
-    }, 1000);
-
-})();
-
-
-// Debugger trap
-setInterval(function(){
-    debugger;
-}, 3000);
-
 </script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 {{-- <style>
