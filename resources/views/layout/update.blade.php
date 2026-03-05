@@ -655,32 +655,85 @@ async function submitUpdateEvaluation(id){
         document.getElementById('updateEvaluationModal').classList.add('hidden');
         if(typeof fetchEvaluations === 'function') fetchEvaluations();
 
-        // ------------------------------
-        // Build full absolute URL with https://yourdomain.com
-        // ------------------------------
-        const origin = window.location.origin; // e.g. https://yourdomain.com
+        // Build absolute URL
+        const origin = window.location.origin;
         const reviewUrl = `${origin}/evaluation/head-review/${result.review_token}`;
+        const reviewCode = result.review_code;
 
         Swal.fire({
             icon: 'success',
             title: 'Updated!',
             html: `
                 ${result.message || 'Evaluation successfully updated!'}<br><br>
-                <strong>Head Review Link:</strong><br>
-                <input type="text" id="copyEvalLink" class="swal2-input" value="${reviewUrl}" readonly>
-                <button id="copyLinkBtn" class="swal2-confirm swal2-styled" style="margin-top:5px;">Copy Link</button>
+
+                <div style="text-align:left">
+
+                    <div style="margin-bottom:10px;">
+                        <strong style="font-size:16px;">🔐 Review Code (IMPORTANT)</strong>
+                        <input type="text"
+                               id="copyEvalCode"
+                               class="swal2-input"
+                               value="${reviewCode}"
+                               readonly
+                               style="font-weight:bold; text-align:center; font-size:20px; letter-spacing:3px;">
+                        <button id="copyCodeBtn"
+                                class="swal2-confirm swal2-styled"
+                                style="margin-top:5px; width:100%;">
+                            Copy Code
+                        </button>
+                    </div>
+
+                    <div style="margin-top:15px;">
+                        <strong>Head Review Link:</strong>
+                        <input type="text"
+                               id="copyEvalLink"
+                               class="swal2-input"
+                               value="${reviewUrl}"
+                               readonly>
+                        <button id="copyLinkBtn"
+                                class="swal2-confirm swal2-styled"
+                                style="margin-top:5px; width:100%;">
+                            Copy Link
+                        </button>
+                    </div>
+
+                    <div style="margin-top:15px;">
+                        <button id="copyBothBtn"
+                                class="swal2-confirm swal2-styled"
+                                style="background-color:#16a34a; width:100%;">
+                            Copy Code + Link
+                        </button>
+                    </div>
+
+                </div>
             `,
             showConfirmButton: false,
             showCloseButton: true,
             didOpen: () => {
-                const copyBtn = document.getElementById('copyLinkBtn');
-                copyBtn.addEventListener('click', () => {
-                    const linkInput = document.getElementById('copyEvalLink');
-                    linkInput.select();
-                    linkInput.setSelectionRange(0, 99999);
-                    document.execCommand('copy');
-                    Swal.fire('Copied!', 'Head Review link copied to clipboard.', 'success');
-                });
+
+                const copyToClipboard = async (text) => {
+                    try{
+                        await navigator.clipboard.writeText(text);
+                        Swal.fire('Copied!', 'Copied to clipboard.', 'success');
+                    }catch{
+                        Swal.fire('Error', 'Failed to copy.', 'error');
+                    }
+                };
+
+                document.getElementById('copyCodeBtn')
+                    .addEventListener('click', () => {
+                        copyToClipboard(reviewCode);
+                    });
+
+                document.getElementById('copyLinkBtn')
+                    .addEventListener('click', () => {
+                        copyToClipboard(reviewUrl);
+                    });
+
+                document.getElementById('copyBothBtn')
+                    .addEventListener('click', () => {
+                        copyToClipboard(`Review Code: ${reviewCode}\nReview Link: ${reviewUrl}`);
+                    });
             }
         });
 
