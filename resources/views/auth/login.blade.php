@@ -105,7 +105,7 @@
           </div>
 
           <!-- Remember & Forgot -->
-          <div class="flex items-center justify-between text-sm">
+          <!-- <div class="flex items-center justify-between text-sm">
             <label class="flex items-center gap-2">
               <input type="checkbox" class="rounded text-blue-600">
               Remember me
@@ -113,7 +113,7 @@
             <a href="#" class="text-blue-600 hover:underline">
               Forgot password?
             </a>
-          </div>
+          </div> -->
 
           <!-- Button -->
           <button
