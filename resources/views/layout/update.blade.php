@@ -660,82 +660,171 @@ async function submitUpdateEvaluation(id){
         const reviewUrl = `${origin}/evaluation/head-review/${result.review_token}`;
         const reviewCode = result.review_code;
 
-        Swal.fire({
-            icon: 'success',
-            title: 'Updated!',
-            html: `
-                ${result.message || 'Evaluation successfully updated!'}<br><br>
+Swal.fire({
+    icon: 'success',
+    title: 'Evaluation Updated',
+    width: 540,
+    showConfirmButton: false,
+    showCloseButton: true,
+    html: `
+    <style>
 
-                <div style="text-align:left">
+        .review-container{
+            text-align:left;
+            font-family:system-ui;
+        }
 
-                    <div style="margin-bottom:10px;">
-                        <strong style="font-size:16px;">🔐 Review Code (IMPORTANT)</strong>
-                        <input type="text"
-                               id="copyEvalCode"
-                               class="swal2-input"
-                               value="${reviewCode}"
-                               readonly
-                               style="font-weight:bold; text-align:center; font-size:20px; letter-spacing:3px;">
-                        <button id="copyCodeBtn"
-                                class="swal2-confirm swal2-styled"
-                                style="margin-top:5px; width:100%;">
-                            Copy Code
-                        </button>
-                    </div>
+        .review-card{
+            background:#f9fafb;
+            border:1px solid #e5e7eb;
+            border-radius:10px;
+            padding:15px;
+            margin-top:12px;
+            transition:all .25s ease;
+        }
 
-                    <div style="margin-top:15px;">
-                        <strong>Head Review Link:</strong>
-                        <input type="text"
-                               id="copyEvalLink"
-                               class="swal2-input"
-                               value="${reviewUrl}"
-                               readonly>
-                        <button id="copyLinkBtn"
-                                class="swal2-confirm swal2-styled"
-                                style="margin-top:5px; width:100%;">
-                            Copy Link
-                        </button>
-                    </div>
+        .review-card:hover{
+            border-color:#fb923c;
+            box-shadow:0 6px 15px rgba(0,0,0,.08);
+        }
 
-                    <div style="margin-top:15px;">
-                        <button id="copyBothBtn"
-                                class="swal2-confirm swal2-styled"
-                                style="background-color:#16a34a; width:100%;">
-                            Copy Code + Link
-                        </button>
-                    </div>
+        .review-label{
+            font-weight:600;
+            font-size:13px;
+            color:#374151;
+            margin-bottom:6px;
+            display:block;
+        }
 
-                </div>
-            `,
-            showConfirmButton: false,
-            showCloseButton: true,
-            didOpen: () => {
+        .review-input{
+            width:100%;
+            border:1px solid #d1d5db;
+            border-radius:6px;
+            padding:8px 10px;
+            font-size:13px;
+            background:white;
+        }
 
-                const copyToClipboard = async (text) => {
-                    try{
-                        await navigator.clipboard.writeText(text);
-                        Swal.fire('Copied!', 'Copied to clipboard.', 'success');
-                    }catch{
-                        Swal.fire('Error', 'Failed to copy.', 'error');
-                    }
-                };
+        .review-code{
+            font-size:22px;
+            text-align:center;
+            font-weight:700;
+            letter-spacing:4px;
+        }
 
-                document.getElementById('copyCodeBtn')
-                    .addEventListener('click', () => {
-                        copyToClipboard(reviewCode);
-                    });
+        .copy-btn{
+            margin-top:10px;
+            width:100%;
+            padding:9px;
+            border:none;
+            border-radius:7px;
+            cursor:pointer;
+            font-weight:600;
+            font-size:13px;
+            color:white;
+            background:linear-gradient(135deg,#fb923c,#f97316);
+            transition:all .25s ease;
+        }
 
-                document.getElementById('copyLinkBtn')
-                    .addEventListener('click', () => {
-                        copyToClipboard(reviewUrl);
-                    });
+        .copy-btn:hover{
+            transform:translateY(-1px);
+            box-shadow:0 6px 14px rgba(0,0,0,.15);
+        }
 
-                document.getElementById('copyBothBtn')
-                    .addEventListener('click', () => {
-                        copyToClipboard(`Review Code: ${reviewCode}\nReview Link: ${reviewUrl}`);
-                    });
-            }
-        });
+        .copy-btn.copied{
+            background:linear-gradient(135deg,#22c55e,#16a34a);
+            transform:scale(1.05);
+        }
+
+        .copy-all{
+            background:linear-gradient(135deg,#22c55e,#16a34a);
+        }
+
+    </style>
+
+    <div class="review-container">
+
+        <p style="margin-bottom:10px;">
+            ${result.message || 'Evaluation successfully updated!'}
+        </p>
+
+        <div class="review-card">
+
+            <span class="review-label">🔐 Review Code (IMPORTANT)</span>
+
+            <input type="text"
+                id="copyEvalCode"
+                class="review-input review-code"
+                value="${reviewCode}"
+                readonly>
+
+            <button id="copyCodeBtn" class="copy-btn">
+                Copy Code
+            </button>
+
+        </div>
+
+        <div class="review-card">
+
+            <span class="review-label">🔗 Head Review Link</span>
+
+            <input type="text"
+                id="copyEvalLink"
+                class="review-input"
+                value="${reviewUrl}"
+                readonly>
+
+            <button id="copyLinkBtn" class="copy-btn">
+                Copy Link
+            </button>
+
+        </div>
+
+        <div style="margin-top:14px;">
+            <button id="copyBothBtn" class="copy-btn copy-all">
+                Copy Code + Link
+            </button>
+        </div>
+
+    </div>
+    `,
+    didOpen: () => {
+
+        function animateCopy(button, text){
+
+            navigator.clipboard.writeText(text);
+
+            const original = button.innerHTML;
+
+            button.classList.add('copied');
+            button.innerHTML = "✔ Copied";
+
+            setTimeout(()=>{
+                button.classList.remove('copied');
+                button.innerHTML = original;
+            },1600);
+        }
+
+        document.getElementById('copyCodeBtn')
+            .addEventListener('click',(e)=>{
+                animateCopy(e.target, reviewCode);
+            });
+
+        document.getElementById('copyLinkBtn')
+            .addEventListener('click',(e)=>{
+                animateCopy(e.target, reviewUrl);
+            });
+
+        document.getElementById('copyBothBtn')
+            .addEventListener('click',(e)=>{
+                animateCopy(
+                    e.target,
+                    `Review Code: ${reviewCode}\nReview Link: ${reviewUrl}`
+                );
+            });
+
+    }
+});
 
     }catch(error){
         console.error('Error updating evaluation:', error);
