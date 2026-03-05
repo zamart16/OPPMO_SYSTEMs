@@ -199,6 +199,7 @@ public function list()
                 'criteria_scores' => $eval->criteriaScores,
                 'digital_approvals' => $eval->digitalApprovals,
                 'head_review_token' => $headReviewLink?->token, // <-- add this
+                'head_review_code'  => $headReviewLink?->code, 
             ];
         });
 
@@ -451,6 +452,7 @@ public function update(Request $request, $id)
             ],
             [
                 'token'        => Str::uuid()->toString(),
+                'code'         => strtoupper(Str::random(6)), // 🔐 Auto-generate 6 chars
                 'expires_at'   => null, // never expires
                 'is_completed' => false,
             ]
@@ -465,7 +467,8 @@ public function update(Request $request, $id)
             'success'      => true,
             'message'      => 'Evaluation updated and submitted for Head review successfully!',
             'review_link'  => $headReviewUrl,
-            'review_token' => $link->token // <-- send token separately for frontend JS
+            'review_token' => $link->token, // <-- send token separately for frontend JS
+            'review_code'  => $link->code,
         ]);
 
     } catch (\Exception $e) {
