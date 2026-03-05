@@ -824,6 +824,11 @@ Swal.fire({
             });
 
     }
+}).then(() => {
+
+    // Reload page when modal closes
+    location.reload();
+
 });
 
     }catch(error){
