@@ -6,7 +6,7 @@
 
     function showWarning(message) {
 
-        // If another SweetAlert modal is open, don't interrupt
+        // Do not interrupt existing modal (like access code modal)
         if (Swal.isVisible()) return;
 
         if (alertShown) return;
@@ -17,8 +17,7 @@
             title: "Action Blocked",
             text: message,
             confirmButtonText: "OK",
-            showCloseButton: true,
-            allowOutsideClick: true
+            showCloseButton: true
         }).then(() => {
             alertShown = false;
         });
@@ -49,21 +48,19 @@ document.addEventListener("contextmenu", function (e) {
     e.preventDefault();
 
     if (!Swal.isVisible()) {
-
         Swal.fire({
             icon: "warning",
             title: "Action Blocked",
-            text: "Right click is not allowed on this page.",
+            text: "Right click is not allowed.",
             confirmButtonText: "OK",
             showCloseButton: true
         });
-
     }
 
 });
 
 
-/* BLOCK DEVTOOLS SHORTCUTS */
+/* BLOCK DEVTOOLS SHORTCUTS ALWAYS */
 document.addEventListener("keydown", function (e) {
 
     if (
@@ -74,9 +71,10 @@ document.addEventListener("keydown", function (e) {
     ) {
 
         e.preventDefault();
+        e.stopPropagation();
 
+        // Only show warning if no modal is open
         if (!Swal.isVisible()) {
-
             Swal.fire({
                 icon: "warning",
                 title: "Action Blocked",
@@ -84,14 +82,13 @@ document.addEventListener("keydown", function (e) {
                 confirmButtonText: "OK",
                 showCloseButton: true
             });
-
         }
 
         return false;
 
     }
 
-});
+}, true);
 </script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 {{-- <style>
