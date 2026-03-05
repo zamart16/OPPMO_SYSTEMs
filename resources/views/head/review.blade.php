@@ -1,4 +1,38 @@
 @include('layout.header')
+@include('layout.reloading')
+<script>
+(function() {
+    function detectDevTools() {
+        const threshold = 160;
+        const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+        const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+
+        if (widthThreshold || heightThreshold) {
+            // Redirect to warning page
+            window.location.href = "/devtools-warning"; // create a route/page explaining access denied
+        }
+    }
+
+    setInterval(detectDevTools, 500);
+})();
+
+// Disable F12, Ctrl+Shift+I / Cmd+Option+I / Ctrl+Shift+J
+document.addEventListener('keydown', function(e) {
+    if (
+        e.key === "F12" ||                                     // F12
+        (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J")) ||  // Ctrl+Shift+I / Ctrl+Shift+J
+        (e.metaKey && e.altKey && e.key === "I")               // Cmd+Option+I (Mac)
+    ) {
+        e.preventDefault(); // Block the key
+        Swal.fire({
+            icon: 'warning',
+            title: 'Action blocked!',
+            text: 'Opening Developer Tools is not allowed!',
+            confirmButtonText: 'Ok'
+        });
+    }
+});
+</script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 {{-- <style>
     /* Force desktop layout on mobile if ?desktop=1 */
@@ -299,13 +333,14 @@ body.desktop-mode {
         <strong>Prepared by:</strong> {{ $evaluation->digitalApprovals->where('role','Prepared By')->first()->full_name ?? '-' }}<br>
         <strong>Designation:</strong> {{ $evaluation->digitalApprovals->where('role','Prepared By')->first()->designation ?? '-' }}
       </div>
-      <div class="text-xs text-gray-500 mb-3">
-        Already submitted by End User
-      </div>
+
 
       <img src="{{ $evaluation->digitalApprovals->where('role','Prepared By')->first()->image ?? '' }}"
            alt="End User Signature"
            class="w-24 h-24 rounded-lg object-cover border border-gray-300">
+      <div class="text-xs text-gray-500 mb-3">
+        Already submitted by End User
+      </div>
     </div>
   </div>
 
@@ -329,14 +364,15 @@ body.desktop-mode {
         <strong>Designation:</strong> <span id="head_evaluatorDesignation"></span>
       </div>
 
-      <div class="text-xs text-gray-500 mb-3">
-        Already submitted by Office Head
-      </div>
+
 
       <img id="head_evaluatorImage"
            src=""
            alt="Evaluator"
            class="w-24 h-24 rounded-lg object-cover border border-gray-300">
+      <div class="text-xs text-gray-500 mb-3">
+        Already submitted by Office Head
+      </div>
     </div>
 
     <div class="flex justify-end space-x-4 mt-8">
@@ -410,6 +446,9 @@ body.desktop-mode {
     </div>
   </div>
 </div>
+
+
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -627,7 +666,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const previousValues = {};
     let warningConfirmed = false;
 
-    // Show / hide loading overlay
     const loadingEl = document.getElementById('loadingModal');
     function showLoading() { loadingEl.classList.remove('hidden'); }
     function hideLoading() { loadingEl.classList.add('hidden'); }
@@ -656,19 +694,59 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Fetch evaluation data
-    showLoading(); // <-- Show spinner before fetch
+    function requireAccessCode() {
+        Swal.fire({
+            title: 'Enter Review Code',
+            input: 'password',
+            inputPlaceholder: 'Enter your review code',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            confirmButtonText: 'Submit',
+            preConfirm: (code) => {
+
+                if (!code) {
+                    Swal.showValidationMessage('Code is required');
+                    return false;
+                }
+
+                return fetch(`/evaluation/validate-code/${token}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ code: code })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.success) {
+                        throw new Error(data.message);
+                    }
+                    return true;
+                })
+                .catch(error => {
+                    Swal.showValidationMessage(error.message);
+                });
+            }
+        }).then((result) => {
+            if (!result.isConfirmed) {
+                window.location.href = '/';
+            }
+        });
+    }
+
+    // FETCH DATA
+    showLoading();
     fetch(`/evaluation/review/${token}`)
         .then(res => res.json())
         .then(data => {
-            // Populate main fields
+
             document.getElementById('update_supplier_name').value = data.supplier_name ?? '-';
             document.getElementById('update_po_no').value = data.po_no ?? '-';
             document.getElementById('update_date_evaluation').value = data.date_evaluation ?? '';
             document.getElementById('update_covered_period').value = data.covered_period ?? '-';
             document.getElementById('update_office_name').value = data.office_name ?? '-';
 
-            // Populate criteria and remarks
             Object.keys(data.criteria).forEach(name => {
                 const score = data.criteria[name];
 
@@ -684,122 +762,65 @@ document.addEventListener('DOMContentLoaded', function () {
             calculateOverallRating();
         })
         .catch(err => console.error('Error fetching evaluation data:', err))
-        .finally(() => hideLoading()); // <-- Hide spinner after fetch
+        .finally(() => {
+            hideLoading();
+            requireAccessCode(); // 🔐 secure popup
+        });
 
-    // Handle radio changes with conditional SweetAlert
-    document.querySelectorAll('input[type="radio"]').forEach(radio => {
-        radio.addEventListener('change', function (event) {
-            const name = event.target.name;
-            const newValue = event.target.value;
+// RADIO CHANGE LOGIC (UPDATED)
+document.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', function (event) {
+        const name = event.target.name;
+        const newValue = event.target.value;
 
-            if (previousValues[name] == newValue) return;
+        if (previousValues[name] == newValue) return;
 
-            if (warningConfirmed) {
+        if (warningConfirmed) {
+            previousValues[name] = newValue;
+            calculateOverallRating();
+
+            // ✅ SHOW SUBMIT BUTTON
+            const submitBtn = document.getElementById('submitUpdateEvaluationBtn');
+            if (submitBtn) submitBtn.classList.remove('hidden');
+
+            return;
+        }
+
+        Swal.fire({
+            icon: 'warning',
+            title: 'Re-rate Confirmation',
+            text: 'You are about to re-rate the evaluation. Are you sure?',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, I confirm',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+
+                warningConfirmed = true;
                 previousValues[name] = newValue;
                 calculateOverallRating();
-                return;
-            }
 
-            Swal.fire({
-                icon: 'warning',
-                title: 'Re-rate Confirmation',
-                text: 'You are about to re-rate the evaluation. Are you sure?',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, I confirm',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    warningConfirmed = true;
-                    previousValues[name] = newValue;
-                    calculateOverallRating();
-                } else {
-                    const prevRadio = document.querySelector(`input[name="${name}"][value="${previousValues[name]}"]`);
-                    if (prevRadio) prevRadio.checked = true;
+                // ✅ SHOW SUBMIT BUTTON AFTER CONFIRM
+                const submitBtn = document.getElementById('submitUpdateEvaluationBtn');
+                if (submitBtn) {
+                    submitBtn.classList.remove('hidden');
                 }
-            });
+
+            } else {
+                const prevRadio = document.querySelector(
+                    `input[name="${name}"][value="${previousValues[name]}"]`
+                );
+                if (prevRadio) prevRadio.checked = true;
+            }
         });
     });
+});
 
 });
 </script>
 
 
-<script>
-document.getElementById('submitUpdateEvaluationBtn').addEventListener('click', async function() {
-    const token = window.location.pathname.split('/').pop();
 
-    // --- Collect main fields ---
-    const payload = {
-        supplier_name: document.getElementById('update_supplier_name')?.value || '',
-        po_no: document.getElementById('update_po_no')?.value || '',
-        date_evaluation: document.getElementById('update_date_evaluation')?.value || '',
-        covered_period: document.getElementById('update_covered_period')?.value || '',
-        office_name: document.getElementById('update_office_name')?.value || '',
-        criteria: {},
-        evaluator: {}
-    };
-
-    // --- Collect criteria scores and remarks ---
-    ['price_1','quality_1','customercare_1','delivery_1'].forEach(name => {
-        const selected = document.querySelector(`input[name="${name}"]:checked`);
-        const remarks = document.getElementById(`update_form_remarks_${name}`)?.value || '';
-        if (selected) {
-            payload.criteria[name] = {
-                value: parseFloat(selected.value),
-                remarks: remarks
-            };
-        }
-    });
-
-    // --- Collect evaluator info (Head) ---
-    const evaluatorName = document.getElementById('head_full_name')?.value || '';
-    const evaluatorDesignation = document.getElementById('head_designation')?.value || '';
-    const evaluatorImage = document.getElementById('head_evaluatorImage')?.src || '';
-    if (evaluatorName && evaluatorDesignation && evaluatorImage) {
-        payload.evaluator = {
-            full_name: evaluatorName,
-            designation: evaluatorDesignation,
-            image: evaluatorImage
-        };
-    }
-
-    // --- Confirm submission ---
-    if (!confirm("Are you sure you want to submit this evaluation?")) return;
-
-    try {
-        const res = await fetch(`/evaluation/update/${token}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify(payload)
-        });
-
-        const data = await res.json();
-
-        if (data.success) {
-            alert(data.message);
-
-            // --- Disable all inputs, selects, textareas, and submit button ---
-            document.querySelectorAll('input, select, textarea').forEach(el => el.disabled = true);
-            document.getElementById('submitUpdateEvaluationBtn').disabled = true;
-
-            // Optional: reload page after short delay
-            // setTimeout(() => window.location.reload(), 1000);
-        } else {
-            alert('Failed to submit evaluation: ' + data.message);
-        }
-    } catch (err) {
-        console.error(err);
-        alert('Error submitting evaluation.');
-    }
-});
-</script>
-
-
-    
-<!-- 
 <script>
 document.getElementById('submitUpdateEvaluationBtn').addEventListener('click', async function() {
     const token = window.location.pathname.split('/').pop();
@@ -865,6 +886,6 @@ document.getElementById('submitUpdateEvaluationBtn').addEventListener('click', a
         alert('Error submitting evaluation.');
     }
 });
-</script> -->
+</script>
 
 </body>
