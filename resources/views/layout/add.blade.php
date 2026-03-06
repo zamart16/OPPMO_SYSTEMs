@@ -18,7 +18,7 @@
       <div class="p-4 sm:p-6 md:p-8">
         <div class="mb-8">
         </div>
-        <div class="hidden mb-8">
+        <div class="mb-8">
           <div class="bg-blue-50 rounded-xl p-6 border-l-4 border-primary">
             <h4 class="text-base font-bold text-primary mb-3 flex items-center">
               <div class="w-5 h-5 flex items-center justify-center mr-2">
@@ -35,10 +35,10 @@
                 <span class="font-bold text-primary mr-2 mt-0.5">2.</span>
                 <span>In the Remarks / Specific Comments Column, please provide the details especially incidents/description of the delivery in case it fell beyond what was expected. You may use additional sheet, if necessary.</span>
               </p>
-              <p class="flex items-start">
+              <!-- <p class="flex items-start">
                 <span class="font-bold text-primary mr-2 mt-0.5">3.</span>
                 <span>When multiple POs are added, each evaluation will be calculated separately and combined for the overall rating.</span>
-              </p>
+              </p> -->
             </div>
           </div>
         </div>
@@ -116,7 +116,7 @@
           </div>
 </div>
 
-                <div class="hidden border-2 border-gray-300 rounded-xl mb-8 shadow-sm overflow-x-auto mb-8">
+                <div class="border-2 border-gray-300 rounded-xl mb-8 shadow-sm overflow-x-auto mb-8">
                   <table class="w-full text-sm min-w-[600px]">
                     <thead>
                       <tr class="bg-gradient-to-r from-gray-800 to-gray-700 border-b border-gray-400">
@@ -245,7 +245,7 @@
 
                   </table>
                 </div>
-                <div class="hidden bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-4 text-white mb-6">
+                <div class="bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-4 text-white mb-6">
                     <div class="text-center">
                       <h4 class="text-lg font-bold mb-4">OVERALL RATING CALCULATION</h4>
                       <div class="bg-white bg-opacity-20 rounded-lg p-4 mb-4">
@@ -274,7 +274,7 @@
           </div>
         </div>
         <!-- Digital Authorization Section -->
-        <div class="hidden bg-gray-50 rounded-xl p-6 border-2 border-gray-200">
+        <div class="bg-gray-50 rounded-xl p-6 border-2 border-gray-200">
           <h4 class="text-lg font-bold text-gray-800 mb-6 pb-3 border-b border-gray-300">
             Digital Authorization
           </h4>
