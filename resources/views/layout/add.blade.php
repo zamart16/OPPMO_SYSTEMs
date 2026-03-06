@@ -109,11 +109,6 @@
            value="{{ auth()->user()->department ?? '' }}"
            readonly>
   @endif
-
-                  <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4 mt-6">
-            <button id="cancelNewEvaluationModalBtn" class="border border-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-50">Cancel</button>
-            <button id="submitNewEvaluationBtn" class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-600">Submit Evaluation</button>
-          </div>
 </div>
 
                 <div class="border-2 border-gray-300 rounded-xl mb-8 shadow-sm overflow-x-auto mb-8">
@@ -312,10 +307,10 @@
             </div>
           </div>
 
-          <!-- <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4 mt-6">
+          <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4 mt-6">
             <button id="cancelNewEvaluationModalBtn" class="border border-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-50">Cancel</button>
             <button id="submitNewEvaluationBtn" class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-600">Submit Evaluation</button>
-          </div> -->
+          </div>
         </div>
 
       </div>
